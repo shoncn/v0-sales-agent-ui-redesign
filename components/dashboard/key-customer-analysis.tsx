@@ -1,17 +1,17 @@
 "use client";
 
-import { Star, MessageSquare, Calendar } from "lucide-react";
+import { Star, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const customers = [
   {
-    name: "刘先生",
-    model: "L8 Max",
+    name: "王先生",
+    model: "L9",
     status: "trial_pending",
     statusLabel: "试驾后3天未跟进",
     intent: "high",
-    description: "家庭用户，关注安全配置，预算充足",
-    actions: ["推荐融资试驾翌驾", "预约二访"],
+    description: "宝马X5置换，纠结问界M9",
+    actions: ["跟进用户"],
   },
   {
     name: "陈先生",
@@ -28,8 +28,8 @@ const customers = [
     status: "negotiating",
     statusLabel: "二次到店洽谈中",
     intent: "high",
-    description: "三胎家庭，空间需求明显，已确定选配",
-    actions: ["跟配方案介绍", "预约二访"],
+    description: "三胎家庭，空间需求明显",
+    actions: ["配置方案介绍", "预约二访"],
   },
   {
     name: "周先生",
@@ -37,7 +37,7 @@ const customers = [
     status: "overdue",
     statusLabel: "试驾后6天",
     intent: "high",
-    description: "科技爱好者，对智能驾驶功能接受度高",
+    description: "科技爱好者，智驾接受度高",
     actions: ["智能驾驶演示", "预约沟通"],
   },
   {
@@ -46,7 +46,7 @@ const customers = [
     status: "quote_pending",
     statusLabel: "报价中等待决策",
     intent: "high",
-    description: "首购用户，关注售后服务质量",
+    description: "首购用户，关注售后服务",
     actions: ["跟进服务", "贷款方案"],
   },
   {
@@ -56,7 +56,7 @@ const customers = [
     statusLabel: "对比竞品M9",
     intent: "medium",
     description: "高端用户，同时对比问界M9",
-    actions: ["综合维修优势", "竞品对比"],
+    actions: ["综合优势", "竞品对比"],
   },
 ];
 
@@ -96,13 +96,13 @@ export function KeyCustomerAnalysis() {
           <Star className="w-4 h-4 text-amber-500" />
           <h3 className="text-sm font-semibold text-gray-800">重点客户分析</h3>
         </div>
-        <Button variant="ghost" size="sm" className="text-xs text-emerald-600 hover:text-emerald-700">
+        <Button variant="ghost" size="sm" className="text-xs text-emerald-600 hover:text-emerald-700 bg-transparent">
           共6位
         </Button>
       </div>
 
       {/* Table Header */}
-      <div className="grid grid-cols-12 gap-3 px-3 py-2 bg-gray-50 rounded-lg text-xs font-medium text-gray-500 mb-2">
+      <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-gray-50 rounded-lg text-xs font-medium text-gray-500 mb-2">
         <div className="col-span-1">客户名</div>
         <div className="col-span-1">意向车系</div>
         <div className="col-span-2">当前状态</div>
@@ -112,18 +112,18 @@ export function KeyCustomerAnalysis() {
       </div>
 
       {/* Table Body */}
-      <div className="space-y-1">
+      <div className="space-y-0">
         {customers.map((customer, index) => (
           <div 
             key={index} 
-            className="grid grid-cols-12 gap-3 px-3 py-3 rounded-lg hover:bg-gray-50 transition-colors items-center border-b border-gray-50 last:border-0"
+            className="grid grid-cols-12 gap-2 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors items-center border-b border-gray-50 last:border-0"
           >
             <div className="col-span-1 text-sm font-medium text-gray-800">{customer.name}</div>
             <div className="col-span-1">
               <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">{customer.model}</span>
             </div>
             <div className="col-span-2">
-              <span className={`px-2 py-1 text-xs rounded-md border ${getStatusStyle(customer.status)}`}>
+              <span className={`px-2 py-0.5 text-xs rounded-md border ${getStatusStyle(customer.status)}`}>
                 {customer.statusLabel}
               </span>
             </div>
@@ -132,20 +132,16 @@ export function KeyCustomerAnalysis() {
                 {customer.intent === "high" ? "高" : customer.intent === "medium" ? "中" : "低"}
               </span>
             </div>
-            <div className="col-span-4 text-xs text-gray-500 leading-relaxed">{customer.description}</div>
-            <div className="col-span-3 flex flex-wrap gap-1.5">
+            <div className="col-span-4 text-xs text-gray-500 truncate">{customer.description}</div>
+            <div className="col-span-3 flex gap-1.5">
               {customer.actions.map((action, actionIndex) => (
                 <Button
                   key={actionIndex}
                   variant="outline"
                   size="sm"
-                  className="h-7 text-xs px-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 bg-transparent"
+                  className="h-6 text-xs px-2 py-0 border-emerald-200 text-emerald-600 hover:bg-emerald-50 bg-transparent whitespace-nowrap"
                 >
-                  {actionIndex === 0 ? (
-                    <MessageSquare className="w-3 h-3 mr-1" />
-                  ) : (
-                    <Calendar className="w-3 h-3 mr-1" />
-                  )}
+                  <UserRound className="w-3 h-3 mr-1" />
                   {action}
                 </Button>
               ))}

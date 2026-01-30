@@ -1,6 +1,6 @@
 "use client";
 
-import { Target, ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
+import { Target, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 
 const actionPlan = {
   title: "月度目标达成路径",
@@ -25,11 +25,11 @@ const actionPlan = {
 };
 
 const funnelData = [
-  { label: "商机量", value: 156, rate: "104%", target: "目标150", extra: "超标6个", positive: true },
-  { label: "邀约量", value: 82, rate: "82%", target: "目标100", extra: "差距18个", positive: false },
-  { label: "试驾量", value: 42, rate: "82%", target: "目标100", extra: "差距18个", positive: false },
-  { label: "跟进量", value: 12, rate: "82%", target: "目标100", extra: "差距18个", positive: false },
-  { label: "锁单量", value: 10, rate: "71%", target: "目标14", extra: "差距4单", positive: false },
+  { label: "商机", value: 156, rate: "104%", target: "目标150", extra: "超标6个", positive: true },
+  { label: "邀约", value: 82, rate: "82%", target: "目标100", extra: "差距18个", positive: false },
+  { label: "试驾", value: 42, rate: "82%", target: "目标100", extra: "差距18个", positive: false },
+  { label: "跟进", value: 12, rate: "82%", target: "目标100", extra: "差距18个", positive: false },
+  { label: "锁单", value: 10, rate: "71%", target: "目标14", extra: "差距4单", positive: false },
 ];
 
 const conversionRates = [
@@ -58,52 +58,117 @@ export function DiagnosisFunnel() {
 
       {/* Funnel Section */}
       <div className="flex gap-6">
-        {/* Funnel Chart */}
-        <div className="flex-1">
-          <div className="space-y-2">
+        {/* SVG Funnel Chart - Same style as workbench */}
+        <div className="flex-1 flex flex-col items-center">
+          <svg viewBox="0 0 280 280" className="w-full max-w-[240px]">
+            <defs>
+              <linearGradient id="dfGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#34D399" />
+                <stop offset="100%" stopColor="#10B981" />
+              </linearGradient>
+              <linearGradient id="dfGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#3ECFB2" />
+                <stop offset="100%" stopColor="#2BB89E" />
+              </linearGradient>
+              <linearGradient id="dfGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#2DD4BF" />
+                <stop offset="100%" stopColor="#14B8A6" />
+              </linearGradient>
+              <linearGradient id="dfGrad4" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#14B8A6" />
+                <stop offset="100%" stopColor="#0D9488" />
+              </linearGradient>
+              <linearGradient id="dfGrad5" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#0D9488" />
+                <stop offset="100%" stopColor="#047857" />
+              </linearGradient>
+              <filter id="dfShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.1"/>
+              </filter>
+            </defs>
+            
             {funnelData.map((item, index) => {
-              const widthPercent = 100 - index * 15;
+              const yStart = index * 52 + 5;
+              const topWidth = 220 - index * 35;
+              const bottomWidth = 220 - (index + 1) * 35;
+              const centerX = 140;
+              
+              const topLeft = centerX - topWidth / 2;
+              const topRight = centerX + topWidth / 2;
+              const bottomLeft = centerX - bottomWidth / 2;
+              const bottomRight = centerX + bottomWidth / 2;
+              
+              const gradients = [
+                "url(#dfGrad1)",
+                "url(#dfGrad2)",
+                "url(#dfGrad3)",
+                "url(#dfGrad4)",
+                "url(#dfGrad5)",
+              ];
+              
               return (
-                <div key={index} className="flex items-center gap-3">
-                  {/* Funnel Bar */}
-                  <div 
-                    className="h-10 bg-gradient-to-r from-emerald-100 to-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-center relative transition-all hover:from-emerald-200 hover:to-emerald-100"
-                    style={{ width: `${widthPercent}%`, minWidth: '140px' }}
+                <g key={index} filter="url(#dfShadow)">
+                  <path
+                    d={`M ${topLeft + 6} ${yStart} 
+                        L ${topRight - 6} ${yStart} 
+                        Q ${topRight} ${yStart} ${topRight} ${yStart + 6}
+                        L ${bottomRight} ${yStart + 40}
+                        Q ${bottomRight} ${yStart + 46} ${bottomRight - 6} ${yStart + 46}
+                        L ${bottomLeft + 6} ${yStart + 46}
+                        Q ${bottomLeft} ${yStart + 46} ${bottomLeft} ${yStart + 40}
+                        L ${topLeft} ${yStart + 6}
+                        Q ${topLeft} ${yStart} ${topLeft + 6} ${yStart}
+                        Z`}
+                    fill={gradients[index]}
+                    className="transition-all duration-300 hover:brightness-110 cursor-pointer"
+                  />
+                  <text
+                    x={centerX}
+                    y={yStart + 28}
+                    textAnchor="middle"
+                    className="fill-white font-medium"
+                    style={{ fontSize: "12px" }}
                   >
-                    <span className="text-sm font-medium text-gray-700">
-                      {item.label}：{item.value}
-                    </span>
-                  </div>
-                  
-                  {/* Arrow */}
-                  <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
-                  
-                  {/* Stats */}
-                  <div className="flex items-center gap-3 min-w-[180px]">
-                    <span className={`text-sm font-semibold ${item.positive ? 'text-emerald-600' : 'text-gray-600'}`}>
-                      {item.rate === "104%" ? "商机" : item.label.replace("量", "")}达成率：{item.rate}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {item.target} | {item.extra}
-                    </span>
-                  </div>
-                </div>
+                    {item.label}量：{item.value}
+                  </text>
+                </g>
               );
             })}
-          </div>
+          </svg>
+        </div>
+
+        {/* Funnel Stats */}
+        <div className="flex flex-col justify-around py-2 min-w-[180px]">
+          {funnelData.map((item, index) => (
+            <div key={index} className="flex items-center gap-2">
+              {item.positive ? (
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              ) : (
+                <TrendingDown className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+              )}
+              <div>
+                <span className={`text-xs font-semibold ${item.positive ? 'text-emerald-600' : 'text-gray-600'}`}>
+                  {item.label}达成率：{item.rate}
+                </span>
+                <div className="text-[10px] text-gray-400">
+                  {item.target} | {item.extra}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Conversion Rates */}
-        <div className="w-[200px] space-y-3">
+        <div className="w-[180px] space-y-3 flex flex-col justify-center">
           {conversionRates.map((item, index) => (
             <div key={index} className="p-3 bg-amber-50 border border-amber-100 rounded-xl">
               <div className="flex items-center gap-1 mb-1">
-                <TrendingDown className="w-3.5 h-3.5 text-amber-500" />
-                <span className="text-sm font-semibold text-amber-700">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                <span className="text-xs font-semibold text-amber-700">
                   {item.from}-{item.to}转化率：{item.rate}
                 </span>
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-[10px] text-gray-500">
                 {item.benchmark} | <span className="text-amber-600">{item.diff}</span>
               </div>
             </div>
