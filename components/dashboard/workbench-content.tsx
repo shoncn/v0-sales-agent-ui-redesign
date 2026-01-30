@@ -6,7 +6,11 @@ import { WorkbenchFunnel } from "@/components/dashboard/workbench-funnel";
 import { CustomerTasks } from "@/components/dashboard/customer-tasks";
 import { TodoList } from "@/components/dashboard/todo-list";
 
-export function WorkbenchContent() {
+interface WorkbenchContentProps {
+  onCustomerClick?: (customerId: string) => void;
+}
+
+export function WorkbenchContent({ onCustomerClick }: WorkbenchContentProps) {
   return (
     <div className="p-5 space-y-4">
       {/* Header */}
@@ -30,7 +34,7 @@ export function WorkbenchContent() {
 
       {/* Customer Tasks and Todo List */}
       <div className="grid grid-cols-2 gap-4">
-        <CustomerTasks />
+        <CustomerTasks onCustomerClick={onCustomerClick} />
         <TodoList />
       </div>
     </div>
