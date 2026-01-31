@@ -400,7 +400,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
           onClick={enterMarketingMaterial}
           className="flex-1 px-4 py-3 bg-blue-500 active:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors"
         >
-          生成营销素材
+          生成素材
         </button>
         <button type="button" className="px-4 py-3 bg-gray-100 active:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors border border-gray-200">
           编辑
