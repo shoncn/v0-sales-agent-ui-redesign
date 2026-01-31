@@ -866,7 +866,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 5: Ask recreate */}
         {(marketingStep === "askRecreate" || marketingStep === "generating" || marketingStep === "complete") && (
           <div className="flex items-start gap-3">
-            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
+            
             <div className="flex-1 space-y-3">
               <p className="text-sm text-foreground">下一步是否为您重新创作？</p>
               {marketingStep === "askRecreate" && (
@@ -894,7 +894,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 7: Generating - LLM style text generation */}
         {marketingStep === "generating" && (
           <div className="flex items-start gap-3">
-            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
+            
             <div className="flex-1">
               <div className="text-sm text-foreground leading-relaxed">
                 <p className="mb-2">正在为您生成视频内容...</p>
@@ -926,7 +926,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 8: Complete */}
         {marketingStep === "complete" && (
           <div className="flex items-start gap-3">
-            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
+            
             <div className="flex-1 space-y-3">
               <div className="bg-gradient-to-br from-success-muted to-success-muted/50 rounded-xl p-4 border border-success/30">
                 <div className="flex items-center gap-2">
