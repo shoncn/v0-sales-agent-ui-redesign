@@ -3,7 +3,7 @@
 import { X, Send, Loader2, Database, Phone, Users, FileText, Download, ChevronRight, AlertCircle, TrendingDown, BarChart3, MessageSquare, User, Target, Lightbulb, Car, Heart } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
-type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy";
+type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis";
 
 interface AnalysisStep {
   id: string;
@@ -57,15 +57,20 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     }
   }, [mode]);
 
-  const startAnalysis = () => {
-    if (!message.trim()) {
-      setMessage("请帮我分析下当前邀约到试驾转化率低的原因");
-    }
+  const startAnalysis = (userMessage?: string) => {
+    const analysisMessage = userMessage || message || "请帮我分析下当前邀约到试驾转化率低的原因";
+    setMessage(analysisMessage);
     setShowInitial(false);
     setCurrentMode("analysis");
     setIsAnalyzing(true);
     setCurrentSteps([]);
     setCurrentStepIndex(0);
+  };
+
+  const enterBusinessDiagnosis = () => {
+    setShowInitial(false);
+    setCurrentMode("businessDiagnosis");
+    setMessage("");
   };
 
   const resetToDefault = () => {
@@ -284,13 +289,17 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
 
       {/* Quick Actions */}
       <div className="w-full space-y-3">
-        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer">
+        <button
+          type="button"
+          onClick={enterBusinessDiagnosis}
+          className="w-full text-left bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer"
+        >
           <div className="flex items-center gap-2 mb-2">
             <BarChart3 className="w-4 h-4 text-emerald-500" />
             <span className="text-sm font-semibold text-gray-700">业务诊断</span>
           </div>
           <p className="text-xs text-gray-500">分析业务数据，诊断经营问题，提供改进建议</p>
-        </div>
+        </button>
 
         <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer">
           <div className="flex items-center gap-2 mb-2">
@@ -314,6 +323,52 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
             <span className="text-sm font-semibold text-gray-700">帮我干活</span>
           </div>
           <p className="text-xs text-gray-500">自动化任务执行，提升工作效率</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Business Diagnosis Initial View
+  const renderBusinessDiagnosisView = () => (
+    <div className="flex flex-col h-full">
+      <div className="flex-1 p-5">
+        {/* AI Message */}
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200 shrink-0">
+            <BarChart3 className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1">
+            <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3 border border-gray-100">
+              <p className="text-sm text-gray-700 leading-relaxed">业务问题可以直接问我。</p>
+            </div>
+            <p className="text-xs text-gray-400 mt-2">Sales Agent</p>
+          </div>
+        </div>
+
+        {/* Quick Question Suggestions */}
+        <div className="mt-6 space-y-2">
+          <p className="text-xs text-gray-500 mb-3">您可以问我：</p>
+          <button
+            type="button"
+            onClick={() => startAnalysis("请帮我分析下当前邀约到试驾转化率低的原因")}
+            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
+          >
+            请帮我分析下当前邀约到试驾转化率低的原因
+          </button>
+          <button
+            type="button"
+            onClick={() => startAnalysis("本月业绩达成情况如何？")}
+            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
+          >
+            本月业绩达成情况如何？
+          </button>
+          <button
+            type="button"
+            onClick={() => startAnalysis("哪些客户需要重点跟进？")}
+            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
+          >
+            哪些客户需要重点跟进？
+          </button>
         </div>
       </div>
     </div>
@@ -466,6 +521,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
       {/* Content */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {currentMode === "default" && showInitial && renderDefaultView()}
+        {currentMode === "businessDiagnosis" && renderBusinessDiagnosisView()}
         {currentMode === "analysis" && renderAnalysisView()}
         {currentMode === "customerProfile" && renderCustomerProfile()}
         {currentMode === "actionStrategy" && renderActionStrategy()}
@@ -514,15 +570,15 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !isAnalyzing && startAnalysis()}
+            onKeyDown={(e) => e.key === 'Enter' && !isAnalyzing && message.trim() && startAnalysis(message)}
             placeholder="请输入您想要咨询的问题..."
             disabled={isAnalyzing}
             className="w-full px-4 py-3.5 pr-12 bg-white border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           />
           <button
             type="button"
-            onClick={startAnalysis}
-            disabled={isAnalyzing}
+            onClick={() => message.trim() && startAnalysis(message)}
+            disabled={isAnalyzing || !message.trim()}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-300 rounded-lg flex items-center justify-center transition-colors"
           >
             {isAnalyzing ? (
