@@ -116,7 +116,7 @@ export function CustomerDetail({ onBack }: CustomerDetailProps) {
 
               <div className="flex items-center gap-2 mb-4">
                 <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-md border border-blue-100">
-                  理想L9
+                  理想i6
                 </span>
                 <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-md border border-emerald-100">
                   已加企微
