@@ -47,6 +47,10 @@ export function DashboardLayout() {
     setActiveTab("customer-detail");
   };
 
+  const handleViewAllTasks = () => {
+    setActiveTab("tasks");
+  };
+
   const handleAssistantModeChange = (mode: AssistantMode) => {
     setAssistantMode(mode);
   };
@@ -69,7 +73,7 @@ export function DashboardLayout() {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto min-w-0">
           {activeTab === "workbench" && (
-            <WorkbenchContent onCustomerClick={handleCustomerClick} />
+            <WorkbenchContent onCustomerClick={handleCustomerClick} onViewAllTasks={handleViewAllTasks} />
           )}
           {activeTab === "diagnosis" && <DiagnosisContent />}
           {activeTab === "tasks" && (

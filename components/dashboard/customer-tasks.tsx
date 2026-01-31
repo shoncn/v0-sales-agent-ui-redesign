@@ -68,9 +68,10 @@ function CustomerItem({
 
 interface CustomerTasksProps {
   onCustomerClick?: (customerId: string) => void;
+  onViewAllTasks?: () => void;
 }
 
-export function CustomerTasks({ onCustomerClick }: CustomerTasksProps) {
+export function CustomerTasks({ onCustomerClick, onViewAllTasks }: CustomerTasksProps) {
   const topCustomers = [
     {
       id: "wang",
@@ -141,12 +142,13 @@ export function CustomerTasks({ onCustomerClick }: CustomerTasksProps) {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
-      <div className="p-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between shrink-0">
         <h3 className="text-base font-semibold text-gray-800">
           客户跟进任务 <span className="text-emerald-600">Top 5</span>
         </h3>
         <button
           type="button"
+          onClick={onViewAllTasks}
           className="text-sm text-emerald-600 active:text-emerald-700"
         >
           全部任务

@@ -8,9 +8,10 @@ import { TodoList } from "@/components/dashboard/todo-list";
 
 interface WorkbenchContentProps {
   onCustomerClick?: (customerId: string) => void;
+  onViewAllTasks?: () => void;
 }
 
-export function WorkbenchContent({ onCustomerClick }: WorkbenchContentProps) {
+export function WorkbenchContent({ onCustomerClick, onViewAllTasks }: WorkbenchContentProps) {
   return (
     <div className="p-5 space-y-4">
       {/* Header */}
@@ -34,7 +35,7 @@ export function WorkbenchContent({ onCustomerClick }: WorkbenchContentProps) {
 
       {/* Customer Tasks and Todo List */}
       <div className="grid grid-cols-2 gap-4">
-        <CustomerTasks onCustomerClick={onCustomerClick} />
+        <CustomerTasks onCustomerClick={onCustomerClick} onViewAllTasks={onViewAllTasks} />
         <TodoList />
       </div>
     </div>

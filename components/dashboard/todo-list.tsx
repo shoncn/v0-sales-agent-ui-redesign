@@ -3,21 +3,25 @@
 interface TodoItemProps {
   name: string;
   phone: string;
-  lastFollowUp: string;
+  timeLabel?: string;
+  timeValue?: string;
   tags: { label: string; variant: "danger" | "warning" | "info" | "outline" }[];
   actionLabel?: string;
   actionType?: "primary" | "warning" | "info";
   carLabels?: string[];
+  lastFollowUp?: string;
 }
 
 function TodoItem({
   name,
   phone,
-  lastFollowUp,
+  timeLabel,
+  timeValue,
   tags,
   actionLabel,
   actionType = "primary",
   carLabels,
+  lastFollowUp,
 }: TodoItemProps) {
   const getTagStyles = (variant: string) => {
     switch (variant) {
@@ -58,7 +62,7 @@ function TodoItem({
 
       <div className="space-y-1 text-sm text-gray-500 mb-3">
         <div>客户手机: {phone}</div>
-        <div>上次跟进时间: {lastFollowUp}</div>
+        {timeLabel && timeValue && <div>{timeLabel}: {timeValue}</div>}
         {carLabels && carLabels.length > 0 && (
           <div className="flex items-center gap-2">
             <span>车主标签:</span>
@@ -90,7 +94,8 @@ export function TodoList() {
     {
       name: "刘女士",
       phone: "1397****2950",
-      lastFollowUp: "2025-06-28",
+      timeLabel: "预约试驾时间",
+      timeValue: "2025-06-28 14:00",
       actionLabel: "试驾排程",
       actionType: "primary" as const,
       tags: [
@@ -102,7 +107,8 @@ export function TodoList() {
     {
       name: "董明",
       phone: "1397****2950",
-      lastFollowUp: "2025-06-28",
+      timeLabel: "上次活跃时间",
+      timeValue: "2025-06-28",
       actionLabel: "战败激活",
       actionType: "warning" as const,
       tags: [
@@ -114,7 +120,6 @@ export function TodoList() {
     {
       name: "于浩天",
       phone: "1397****2950",
-      lastFollowUp: "2025-06-28",
       actionLabel: "车主任务",
       actionType: "info" as const,
       carLabels: ["理想L6", "理想L8"],
@@ -128,7 +133,7 @@ export function TodoList() {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-6 pb-4 border-b border-gray-100">
+      <div className="px-4 py-3 border-b border-gray-100">
         <h3 className="text-base font-semibold text-gray-800">
           待办事项 <span className="text-emerald-600">3</span>
         </h3>
