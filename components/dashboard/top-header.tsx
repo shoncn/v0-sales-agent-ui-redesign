@@ -27,8 +27,9 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
 
         {/* Name and Title */}
         <div className="flex flex-col">
-          <span className="text-sm font-semibold text-gray-800">吴凡凡</span>
-          <span className="text-xs text-gray-500">产品专家 | 理想汽车祥云小镇零售中心</span>
+          <span className="text-sm font-semibold text-gray-800">高磊</span>
+          <span className="text-xs text-gray-500">产品专家 | 杭州拱墅汽车城零售门店
+</span>
         </div>
       </div>
 
