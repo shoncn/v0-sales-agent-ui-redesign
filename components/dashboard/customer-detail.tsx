@@ -139,12 +139,12 @@ export function CustomerDetail({ onBack }: CustomerDetailProps) {
 
               <div className="flex flex-wrap gap-2 mb-4">
                 <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full border border-blue-100">
-                  心愿单
+                  理想i6
                 </span>
-                <span className="px-2.5 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full border border-amber-100">
+                <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full border border-blue-100">
                   预算30~50w
                 </span>
-                <span className="px-2.5 py-1 bg-rose-50 text-rose-600 text-xs font-medium rounded-full border border-rose-100">
+                <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full border border-blue-100">
                   二胎家庭
                 </span>
               </div>
