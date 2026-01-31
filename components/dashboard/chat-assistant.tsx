@@ -284,36 +284,36 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
 
       {/* Quick Actions */}
       <div className="w-full space-y-3">
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
+        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer">
+          <div className="flex items-center gap-2 mb-2">
+            <BarChart3 className="w-4 h-4 text-emerald-500" />
+            <span className="text-sm font-semibold text-gray-700">业务诊断</span>
+          </div>
+          <p className="text-xs text-gray-500">分析业务数据，诊断经营问题，提供改进建议</p>
+        </div>
+
+        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer">
+          <div className="flex items-center gap-2 mb-2">
+            <User className="w-4 h-4 text-blue-500" />
+            <span className="text-sm font-semibold text-gray-700">客户顾问</span>
+          </div>
+          <p className="text-xs text-gray-500">基于客户画像提供沟通策略和跟进建议</p>
+        </div>
+
+        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="w-4 h-4 text-amber-500" />
+            <span className="text-sm font-semibold text-gray-700">获客助手</span>
+          </div>
+          <p className="text-xs text-gray-500">智能获客线索挖掘，拓展潜在客户资源</p>
+        </div>
+
+        <div className="bg-white rounded-xl p-4 border border-gray-200 hover:border-rose-300 hover:shadow-md transition-all cursor-pointer">
           <div className="flex items-center gap-2 mb-2">
             <Target className="w-4 h-4 text-rose-500" />
-            <span className="text-sm font-semibold text-gray-700">客户洞察</span>
+            <span className="text-sm font-semibold text-gray-700">帮我干活</span>
           </div>
-          <p className="text-xs text-gray-500">基于客户详情页面的信息，深度挖掘用户</p>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Lightbulb className="w-4 h-4 text-amber-500" />
-            <span className="text-sm font-semibold text-gray-700">探需技巧</span>
-          </div>
-          <p className="text-xs text-gray-500">基于客户画像的沟通策略，排除障碍技巧</p>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Car className="w-4 h-4 text-blue-500" />
-            <span className="text-sm font-semibold text-gray-700">跟进技巧</span>
-          </div>
-          <p className="text-xs text-gray-500">推荐的跟进建议</p>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Heart className="w-4 h-4 text-emerald-500" />
-            <span className="text-sm font-semibold text-gray-700">促单技巧</span>
-          </div>
-          <p className="text-xs text-gray-500">推荐促单话术及发送话术</p>
+          <p className="text-xs text-gray-500">自动化任务执行，提升工作效率</p>
         </div>
       </div>
     </div>
