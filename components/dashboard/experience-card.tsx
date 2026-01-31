@@ -60,7 +60,7 @@ export function ExperienceCard() {
           {/* 试驾质量 */}
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-orange-500 rounded-full" />
+              
               <span className="text-xs font-medium text-gray-700">试驾质量</span>
             </div>
             <div className="flex justify-between pr-4">
@@ -79,7 +79,7 @@ export function ExperienceCard() {
           {/* 客户满意度 */}
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-cyan-500 rounded-full" />
+              
               <span className="text-xs font-medium text-gray-700">客户满意度</span>
             </div>
             <div className="flex justify-between pl-4">
