@@ -904,21 +904,38 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             </div>
             <div className="flex-1 space-y-3">
               <p className="text-sm text-gray-700">正在生成视频，这可能需要几分钟时间，请稍后回来查看完成状态</p>
-              {/* Progress bar */}
-              <div className="bg-gray-100 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-gray-500">生成进度</span>
-                  <span className="text-xs font-medium text-blue-600">{Math.round(videoGenerationProgress)}%</span>
+              {/* Video generation progress card */}
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                {/* Video preview placeholder */}
+                <div className="relative aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-white/10 flex items-center justify-center">
+                      <Video className="w-8 h-8 text-white/60 animate-pulse" />
+                    </div>
+                    <p className="text-white/80 text-sm font-medium">视频生成中...</p>
+                    <p className="text-white/50 text-xs mt-1">全网最详细理想i6评测</p>
+                  </div>
+                  {/* Progress overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-4 py-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-white/80 text-xs">生成进度</span>
+                      <span className="text-white text-xs font-medium">{Math.round(videoGenerationProgress)}%</span>
+                    </div>
+                    <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-500"
+                        style={{ width: `${videoGenerationProgress}%` }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
-                    style={{ width: `${videoGenerationProgress}%` }}
-                  />
-                </div>
-                <div className="flex items-center gap-2 mt-3 text-xs text-gray-500">
-                  <Clock className="w-3 h-3" />
-                  <span>预计需要 1-3 分钟</span>
+                <div className="p-3 bg-gray-50">
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <Clock className="w-3 h-3" />
+                    <span>预计需要 1-3 分钟</span>
+                    <span className="text-gray-300">|</span>
+                    <span>种草视频</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -989,14 +1006,19 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                   {/* Video thumbnails */}
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { title: "理想L9家庭出游", duration: "00:02:30", views: "12.5万" },
-                      { title: "理想L8城市通勤", duration: "00:01:45", views: "8.2万" },
-                      { title: "理想L7周末自驾", duration: "00:03:15", views: "15.8万" },
+                      { title: "面对冰雪路面方向盘自己会修正是种什么体验", duration: "00:02:18", views: "18.6万", image: "/images/11.jpg" },
+                      { title: "理想i8超长3米侧气帘，给你满舱安全底气", duration: "00:01:52", views: "12.3万", image: "/images/44.jpg" },
+                      { title: "牙克石-30°C实测,这台车空调不止是快", duration: "00:03:05", views: "25.1万", image: "/images/55.jpg" },
                     ].map((video, index) => (
                       <div key={index} className="bg-gray-100 rounded-xl overflow-hidden">
-                        <div className="relative aspect-[9/16] bg-gradient-to-br from-gray-200 to-gray-300">
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-10 h-10 bg-white/80 rounded-full flex items-center justify-center">
+                        <div className="relative aspect-[9/16]">
+                          <img 
+                            src={video.image || "/placeholder.svg"} 
+                            alt={video.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                            <div className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
                               <Play className="w-5 h-5 text-gray-700 ml-0.5" />
                             </div>
                           </div>
@@ -1005,8 +1027,8 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                           </div>
                         </div>
                         <div className="p-2">
-                          <p className="text-xs font-medium text-gray-700 truncate">{video.title}</p>
-                          <p className="text-[10px] text-gray-500">{video.views} 播放</p>
+                          <p className="text-xs font-medium text-gray-700 line-clamp-2 leading-tight">{video.title}</p>
+                          <p className="text-[10px] text-gray-500 mt-1">{video.views} 播放</p>
                         </div>
                       </div>
                     ))}
@@ -1019,21 +1041,25 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             <div className="space-y-4 animate-in fade-in duration-500">
               <p className="text-sm text-gray-700">视频已生成完成：</p>
               
-              {/* Final video preview - using provided image */}
+              {/* Final video preview - using 66.jpg */}
               <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                 <div className="relative">
                   <img 
-                    src="/images/20260131-163106.jpg" 
-                    alt="理想i6评测视频" 
+                    src="/images/66.jpg" 
+                    alt="全网最详细理想i6评测视频" 
                     className="w-full aspect-video object-cover"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
-                      <Play className="w-7 h-7 text-gray-800 ml-1" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                    <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center shadow-xl">
+                      <Play className="w-8 h-8 text-gray-800 ml-1" />
                     </div>
                   </div>
                   <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded">
                     00:03:50
+                  </div>
+                  {/* New badge */}
+                  <div className="absolute top-3 left-3 bg-emerald-500 text-white text-[10px] font-medium px-2 py-1 rounded">
+                    AI 生成
                   </div>
                 </div>
                 <div className="p-4">
