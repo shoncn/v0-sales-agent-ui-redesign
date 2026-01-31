@@ -1,6 +1,8 @@
 "use client";
 
-import { X, Send, Loader2, Database, Phone, Users, FileText, Download, ChevronRight, AlertCircle, TrendingDown, BarChart3, MessageSquare, User, Target, Lightbulb, Car, Heart } from "lucide-react";
+import React from "react"
+
+import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, Sparkles, Plus, Mic } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis";
@@ -49,6 +51,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   const [currentStepIndex, setCurrentStepIndex] = useState(-1);
   const [currentMode, setCurrentMode] = useState<AssistantMode>(mode);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setCurrentMode(mode);
@@ -101,6 +104,14 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     }
   }, [currentSteps, currentMode]);
 
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  }, [message]);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "优秀": return "bg-emerald-100 text-emerald-700";
@@ -133,11 +144,17 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey && !isAnalyzing && message.trim()) {
+      e.preventDefault();
+      startAnalysis(message);
+    }
+  };
+
   // Customer Profile Content
   const renderCustomerProfile = () => (
-    <div className="p-5 space-y-4">
-      {/* Customer Header */}
-      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+    <div className="p-6 space-y-4">
+      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-5 border border-emerald-100">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
             <User className="w-6 h-6 text-emerald-600" />
@@ -149,237 +166,157 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
         </div>
       </div>
 
-      {/* Profile Cards */}
       <div className="space-y-3">
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <div className="flex items-center gap-2 mb-3">
-            <Target className="w-4 h-4 text-blue-500" />
-            <span className="text-sm font-semibold text-gray-700">客户洞察</span>
+        {[
+          { icon: Target, color: "text-blue-500", title: "客户洞察", desc: "基于客户详情页面的信息，深度挖掘用户" },
+          { icon: Sparkles, color: "text-amber-500", title: "探需技巧", desc: "基于客户画像的沟通策略，排除障碍技巧" },
+          { icon: BarChart3, color: "text-emerald-500", title: "跟进技巧", desc: "推荐的跟进建议" },
+          { icon: Target, color: "text-rose-500", title: "促单技巧", desc: "推荐促单话术及发送话术" },
+        ].map((item, i) => (
+          <div key={i} className="bg-white rounded-xl p-4 border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all">
+            <div className="flex items-center gap-2 mb-2">
+              <item.icon className={`w-4 h-4 ${item.color}`} />
+              <span className="text-sm font-semibold text-gray-700">{item.title}</span>
+            </div>
+            <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
           </div>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            基于客户详情页面的信息，深度挖掘用户
-          </p>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <div className="flex items-center gap-2 mb-3">
-            <Lightbulb className="w-4 h-4 text-amber-500" />
-            <span className="text-sm font-semibold text-gray-700">探需技巧</span>
-          </div>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            基于客户画像的沟通策略，排除障碍技巧
-          </p>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <div className="flex items-center gap-2 mb-3">
-            <Car className="w-4 h-4 text-emerald-500" />
-            <span className="text-sm font-semibold text-gray-700">跟进技巧</span>
-          </div>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            推荐的跟进建议
-          </p>
-        </div>
-
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <div className="flex items-center gap-2 mb-3">
-            <Heart className="w-4 h-4 text-rose-500" />
-            <span className="text-sm font-semibold text-gray-700">促单技巧</span>
-          </div>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            推荐促单话术及发送话术
-          </p>
-        </div>
+        ))}
       </div>
     </div>
   );
 
   // Action Strategy Content
   const renderActionStrategy = () => (
-    <div className="p-5 space-y-4">
-      {/* Strategy Header */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+    <div className="p-6 space-y-4">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-100">
         <div className="flex items-center gap-2 mb-2">
           <Target className="w-5 h-5 text-blue-600" />
           <span className="font-bold text-gray-800">行动策略</span>
         </div>
       </div>
 
-      {/* Strategy Content */}
-      <div className="bg-white rounded-xl p-4 border border-gray-200 space-y-3">
-        <div className="flex items-start gap-2">
-          <span className="text-gray-400 mt-0.5">{'>'}</span>
-          <div>
-            <span className="text-sm font-medium text-gray-700">策略：</span>
-            <span className="text-sm text-gray-600">精准打击"停车焦虑" (解决顾虑)</span>
+      <div className="bg-white rounded-xl p-4 border border-gray-100 space-y-3">
+        {[
+          { label: "策略", value: '精准打击"停车焦虑" (解决顾虑)' },
+          { label: "动作", value: "主动提出针对泊车的上门演示或邀约。" },
+          { label: "话术逻辑", value: "不谈参数，只谈场景。" },
+        ].map((item, i) => (
+          <div key={i} className="flex items-start gap-2">
+            <span className="text-gray-400 mt-0.5">·</span>
+            <div>
+              <span className="text-sm font-medium text-gray-700">{item.label}：</span>
+              <span className="text-sm text-gray-600">{item.value}</span>
+            </div>
           </div>
-        </div>
-        <div className="flex items-start gap-2">
-          <span className="text-gray-400 mt-0.5">{'>'}</span>
-          <div>
-            <span className="text-sm font-medium text-gray-700">动作：</span>
-            <span className="text-sm text-gray-600">主动提出针对泊车的上门演示或邀约。</span>
-          </div>
-        </div>
-        <div className="flex items-start gap-2">
-          <span className="text-gray-400 mt-0.5">{'>'}</span>
-          <div>
-            <span className="text-sm font-medium text-gray-700">话术逻辑：</span>
-            <span className="text-sm text-gray-600">不谈参数，只谈场景。</span>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Message Content */}
-      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
         <p className="text-sm text-gray-700 leading-relaxed">
           {customerName}，我看您最近在关注L9的智能驾驶。L9虽然尺寸比较大，但最新的OTA升级后，断头路和狭窄车位泊入比老司机还稳。如果您方便，我今天或是明天把车开到您家楼下（或者您太太常去的商场），咱们专门试一下您最担心的那个车位，您亲自体验一下到底好不好停，怎么样？
         </p>
       </div>
 
-      {/* Action Buttons */}
       <div className="flex gap-2">
-        <button
-          type="button"
-          className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-xl transition-colors shadow-lg shadow-emerald-200"
-        >
+        <button type="button" className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-xl transition-colors">
           一键发送至企微
         </button>
-        <button
-          type="button"
-          className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors"
-        >
+        <button type="button" className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors">
           生成营销素材
         </button>
-        <button
-          type="button"
-          className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors border border-gray-200"
-        >
+        <button type="button" className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors border border-gray-200">
           编辑
         </button>
       </div>
     </div>
   );
 
-  // Default Initial View
+  // Default LLM Style View
   const renderDefaultView = () => (
-    <div className="flex flex-col items-center justify-center h-full px-4 py-5">
-      {/* Avatar */}
-      <div className="w-20 h-20 mb-4 relative">
-        <div className="w-full h-full rounded-xl bg-gradient-to-br from-emerald-50 to-teal-100 flex items-center justify-center overflow-hidden shadow-lg">
-          <svg viewBox="0 0 100 100" className="w-14 h-14">
-            <ellipse cx="50" cy="55" rx="30" ry="28" fill="#E8DDD0" />
-            <circle cx="40" cy="52" r="3" fill="#2D2D2D" />
-            <circle cx="60" cy="52" r="3" fill="#2D2D2D" />
-            <path d="M 40 62 Q 50 70 60 62" stroke="#2D2D2D" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <ellipse cx="50" cy="32" rx="28" ry="12" fill="#C4956A" />
-            <path d="M 22 32 Q 22 20 50 18 Q 78 20 78 32" fill="#C4956A" />
-            <ellipse cx="50" cy="32" rx="32" ry="6" fill="#B8875C" />
-          </svg>
-        </div>
-        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white">
-          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-        </div>
+    <div className="flex flex-col items-center justify-center h-full px-8 py-10">
+      {/* Logo/Avatar */}
+      <div className="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg">
+        <Sparkles className="w-8 h-8 text-white" />
       </div>
 
-      <h3 className="text-base font-bold text-gray-800 mb-1 text-center">Hi 我是SalesAgent</h3>
-      <p className="text-xs text-gray-500 text-center leading-relaxed px-2 mb-5">
-        AI销售专家，帮您分析业务、获客、客户管理
+      <h2 className="text-xl font-semibold text-gray-800 mb-2">Sales Agent</h2>
+      <p className="text-sm text-gray-500 text-center mb-8 max-w-sm">
+        AI销售专家，帮您分析业务数据、管理客户、提升销售效率
       </p>
 
-      {/* Quick Actions */}
-      <div className="w-full space-y-2">
+      {/* Quick Action Chips */}
+      <div className="w-full max-w-md grid grid-cols-2 gap-3 mb-6">
         <button
           type="button"
           onClick={enterBusinessDiagnosis}
-          className="w-full text-left bg-white rounded-lg p-3 border border-gray-200 hover:border-emerald-300 hover:shadow-sm transition-all cursor-pointer"
+          className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left"
         >
-          <div className="flex items-center gap-2 mb-1">
-            <BarChart3 className="w-3.5 h-3.5 text-emerald-500" />
-            <span className="text-xs font-semibold text-gray-700">业务诊断</span>
-          </div>
-          <p className="text-[10px] text-gray-500 leading-relaxed">分析业务数据，诊断经营问题</p>
+          <BarChart3 className="w-4 h-4 text-emerald-500 shrink-0" />
+          <span className="text-sm text-gray-700">业务诊断</span>
         </button>
-
-        <div className="bg-white rounded-lg p-3 border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer">
-          <div className="flex items-center gap-2 mb-1">
-            <User className="w-3.5 h-3.5 text-blue-500" />
-            <span className="text-xs font-semibold text-gray-700">客户顾问</span>
-          </div>
-          <p className="text-[10px] text-gray-500 leading-relaxed">基于客户画像提供沟通策略</p>
-        </div>
-
-        <div className="bg-white rounded-lg p-3 border border-gray-200 hover:border-amber-300 hover:shadow-sm transition-all cursor-pointer">
-          <div className="flex items-center gap-2 mb-1">
-            <Users className="w-3.5 h-3.5 text-amber-500" />
-            <span className="text-xs font-semibold text-gray-700">获客助手</span>
-          </div>
-          <p className="text-[10px] text-gray-500 leading-relaxed">智能获客线索挖掘</p>
-        </div>
-
-        <div className="bg-white rounded-lg p-3 border border-gray-200 hover:border-rose-300 hover:shadow-sm transition-all cursor-pointer">
-          <div className="flex items-center gap-2 mb-1">
-            <Target className="w-3.5 h-3.5 text-rose-500" />
-            <span className="text-xs font-semibold text-gray-700">帮我干活</span>
-          </div>
-          <p className="text-[10px] text-gray-500 leading-relaxed">自动化任务执行</p>
-        </div>
+        <button
+          type="button"
+          className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all text-left"
+        >
+          <User className="w-4 h-4 text-blue-500 shrink-0" />
+          <span className="text-sm text-gray-700">客户顾问</span>
+        </button>
+        <button
+          type="button"
+          className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-amber-300 hover:bg-amber-50 transition-all text-left"
+        >
+          <Users className="w-4 h-4 text-amber-500 shrink-0" />
+          <span className="text-sm text-gray-700">获客助手</span>
+        </button>
+        <button
+          type="button"
+          className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-rose-300 hover:bg-rose-50 transition-all text-left"
+        >
+          <Target className="w-4 h-4 text-rose-500 shrink-0" />
+          <span className="text-sm text-gray-700">帮我干活</span>
+        </button>
       </div>
     </div>
   );
 
-  // Business Diagnosis Initial View
+  // Business Diagnosis View
   const renderBusinessDiagnosisView = () => (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 p-5">
-        {/* AI Message */}
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-200 shrink-0">
-            <BarChart3 className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex-1">
-            <div className="bg-gray-50 rounded-2xl rounded-tl-sm px-4 py-3 border border-gray-100">
-              <p className="text-sm text-gray-700 leading-relaxed">业务问题可以直接问我。</p>
-            </div>
-            <p className="text-xs text-gray-400 mt-2">Sales Agent</p>
-          </div>
+    <div className="flex flex-col h-full p-6">
+      {/* AI Message */}
+      <div className="mb-6">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100">
+          <Sparkles className="w-4 h-4 text-emerald-500" />
+          <span className="text-sm text-gray-700">业务问题可以直接问我。</span>
         </div>
+      </div>
 
-        {/* Quick Question Suggestions */}
-        <div className="mt-6 space-y-2">
-          <p className="text-xs text-gray-500 mb-3">您可以问我：</p>
+      {/* Suggestions */}
+      <div className="space-y-2">
+        <p className="text-xs text-gray-400 mb-3">试试这些问题：</p>
+        {[
+          "请帮我分析下当前邀约到试驾转化率低的原因",
+          "本月业绩达成情况如何？",
+          "哪些客户需要重点跟进？"
+        ].map((q, i) => (
           <button
+            key={i}
             type="button"
-            onClick={() => startAnalysis("请帮我分析下当前邀约到试驾转化率低的原因")}
-            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
+            onClick={() => startAnalysis(q)}
+            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all"
           >
-            请帮我分析下当前邀约到试驾转化率低的原因
+            {q}
           </button>
-          <button
-            type="button"
-            onClick={() => startAnalysis("本月业绩达成情况如何？")}
-            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
-          >
-            本月业绩达成情况如何？
-          </button>
-          <button
-            type="button"
-            onClick={() => startAnalysis("哪些客户需要重点跟进？")}
-            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-emerald-300 hover:bg-emerald-50 transition-all"
-          >
-            哪些客户需要重点跟进？
-          </button>
-        </div>
+        ))}
       </div>
     </div>
   );
 
   // Analysis View
   const renderAnalysisView = () => (
-    <div className="p-5 space-y-4">
+    <div className="p-6 space-y-4">
       {/* User Question */}
       <div className="flex justify-end">
-        <div className="max-w-[85%] bg-emerald-500 text-white px-4 py-3 rounded-2xl rounded-tr-sm shadow-lg">
+        <div className="max-w-[85%] bg-emerald-500 text-white px-4 py-3 rounded-2xl rounded-tr-sm">
           <p className="text-sm">{message || "请帮我分析下当前邀约到试驾转化率低的原因"}</p>
         </div>
       </div>
@@ -415,8 +352,8 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
             )}
 
             {step.type === 'analysis' && (
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
                   <div className="flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 text-emerald-500" />
                     <span className="text-sm font-semibold text-gray-800">{step.title}</span>
@@ -427,8 +364,8 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
             )}
 
             {step.type === 'table' && (
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-blue-500" />
                     <span className="text-sm font-semibold text-gray-800">{step.title}</span>
@@ -475,7 +412,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
                 <div className="px-4 pb-4">
                   <button
                     type="button"
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors shadow-lg shadow-emerald-200"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors"
                   >
                     <Download className="w-4 h-4" />
                     导出完整分析报告
@@ -497,28 +434,8 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   );
 
   return (
-    <aside className="w-1/2 bg-white flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-teal-50">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-200">
-            <MessageSquare className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <span className="font-bold text-gray-800 text-sm block">Sales Agent</span>
-            <span className="text-[10px] text-emerald-600">AI 智能助手</span>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={resetToDefault}
-          className="w-7 h-7 hover:bg-white/60 rounded-lg flex items-center justify-center transition-colors"
-        >
-          <X className="w-3.5 h-3.5 text-gray-400" />
-        </button>
-      </div>
-
-      {/* Content */}
+    <aside className="w-1/2 bg-gradient-to-b from-gray-50 to-white flex flex-col">
+      {/* Content Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {currentMode === "default" && showInitial && renderDefaultView()}
         {currentMode === "businessDiagnosis" && renderBusinessDiagnosisView()}
@@ -527,66 +444,57 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
         {currentMode === "actionStrategy" && renderActionStrategy()}
       </div>
 
-      {/* Quick Action Buttons */}
-      {(currentMode === "customerProfile" || currentMode === "actionStrategy") && (
-        <div className="px-4 py-3 border-t border-gray-100 bg-white">
-          <div className="flex items-center gap-2">
+      {/* LLM Style Input Area */}
+      <div className="p-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+          {/* Textarea */}
+          <div className="px-4 pt-4">
+            <textarea
+              ref={textareaRef}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="输入您的问题..."
+              disabled={isAnalyzing}
+              rows={1}
+              className="w-full resize-none text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-transparent"
+              style={{ minHeight: '24px', maxHeight: '120px' }}
+            />
+          </div>
+          
+          {/* Bottom Bar with Buttons */}
+          <div className="flex items-center justify-between px-3 py-2 border-t border-gray-100 mt-2">
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={resetToDefault}
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                title="新对话"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                title="语音输入"
+              >
+                <Mic className="w-4 h-4" />
+              </button>
+            </div>
+            
             <button
               type="button"
-              onClick={() => setCurrentMode("default")}
-              className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg transition-colors border border-gray-200"
+              onClick={() => message.trim() && startAnalysis(message)}
+              disabled={isAnalyzing || !message.trim()}
+              className="w-8 h-8 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-colors"
             >
-              业务诊断
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentMode("customerProfile")}
-              className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${currentMode === "customerProfile" ? "bg-emerald-500 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"}`}
-            >
-              获客助手
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentMode("customerProfile")}
-              className="flex-1 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg transition-colors border border-gray-200"
-            >
-              客户顾问
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentMode("actionStrategy")}
-              className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${currentMode === "actionStrategy" ? "bg-emerald-500 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"}`}
-            >
-              任务助手
+              {isAnalyzing ? (
+                <Loader2 className="w-4 h-4 text-white animate-spin" />
+              ) : (
+                <Send className="w-4 h-4 text-white" />
+              )}
             </button>
           </div>
-        </div>
-      )}
-
-      {/* Input */}
-      <div className="p-3 border-t border-gray-100 bg-gray-50/50">
-        <div className="relative">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !isAnalyzing && message.trim() && startAnalysis(message)}
-            placeholder="请输入问题..."
-            disabled={isAnalyzing}
-            className="w-full px-3 py-2.5 pr-10 bg-white border border-gray-200 rounded-lg text-xs placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-          />
-          <button
-            type="button"
-            onClick={() => message.trim() && startAnalysis(message)}
-            disabled={isAnalyzing || !message.trim()}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-300 rounded-md flex items-center justify-center transition-colors"
-          >
-            {isAnalyzing ? (
-              <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
-            ) : (
-              <Send className="w-3.5 h-3.5 text-white" />
-            )}
-          </button>
         </div>
       </div>
     </aside>
