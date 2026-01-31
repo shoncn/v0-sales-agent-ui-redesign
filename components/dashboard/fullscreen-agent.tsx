@@ -405,9 +405,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
       <div className="max-w-xl mx-auto px-6 py-8">
         {/* AI Welcome Message */}
         <div className="flex items-start gap-3 mb-6">
-          <div className="w-8 h-8 bg-gradient-to-br from-info to-info/80 rounded-lg flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-info-foreground" />
-          </div>
+          
           <div className="flex-1 text-sm text-foreground leading-relaxed">
             <p className="mb-4">您好，店长！我是理想同学，您的AI销售助手。我可以帮您：</p>
             <ul className="space-y-2 mb-4">
