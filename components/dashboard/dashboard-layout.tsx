@@ -1,8 +1,7 @@
 "use client";
 
-import { Sidebar } from "@/components/ui/sidebar"
-
 import { useState } from "react";
+import { TopHeader } from "@/components/dashboard/top-header";
 import { FloatingMenu } from "@/components/dashboard/floating-menu";
 import { ChatAssistant } from "@/components/dashboard/chat-assistant";
 import { WorkbenchContent } from "@/components/dashboard/workbench-content";
@@ -10,7 +9,6 @@ import { DiagnosisContent } from "@/components/dashboard/diagnosis-content";
 import { CustomerDetail } from "@/components/dashboard/customer-detail";
 import { TaskListContent } from "@/components/dashboard/task-list-content";
 
-type ViewType = "workbench" | "diagnosis" | "tasks" | "customers" | "content" | "tools" | "customer-detail";
 type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy";
 
 export function DashboardLayout() {
@@ -18,6 +16,7 @@ export function DashboardLayout() {
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [assistantMode, setAssistantMode] = useState<AssistantMode>("default");
   const [selectedCustomerName, setSelectedCustomerName] = useState<string>("王先生");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleCustomerClick = (customerId: string) => {
     setSelectedCustomerId(customerId);
@@ -34,20 +33,16 @@ export function DashboardLayout() {
     if (tab !== "customer-detail") {
       setSelectedCustomerId(null);
     }
-    // Reset assistant mode when changing tabs
     setAssistantMode("default");
   };
 
-  // Task list interactions
   const handleConsultantClick = (customerName: string) => {
     setSelectedCustomerName(customerName);
-    // 点击顾问助手按钮显示跟进建议/行动策略
     setAssistantMode("actionStrategy");
   };
 
   const handleActionClick = (customerName: string, action: "followUp" | "weChat") => {
     setSelectedCustomerName(customerName);
-    // 点击写跟进或发企微只进入用户详情页，不改变Agent显示
     setSelectedCustomerId("wang-detail");
     setActiveTab("customer-detail");
   };
@@ -57,9 +52,17 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="w-[1194px] h-[834px] mx-auto flex bg-[#F5F7FA] overflow-hidden relative rounded-lg shadow-xl">
+    <div className="w-[1194px] h-[834px] mx-auto flex flex-col bg-[#F5F7FA] overflow-hidden relative rounded-lg shadow-xl">
+      {/* Top Header */}
+      <TopHeader onMenuClick={() => setIsMenuOpen(true)} />
+
       {/* Floating Menu */}
-      <FloatingMenu activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} onTabChange={handleTabChange} />
+      <FloatingMenu 
+        activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} 
+        onTabChange={handleTabChange}
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">

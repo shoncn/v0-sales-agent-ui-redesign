@@ -5,25 +5,6 @@ import { Phone, PhoneIncoming, PhoneOutgoing, Car, Smile, Building2 } from "luci
 export function ExperienceCard() {
   return (
     <div className="space-y-4 h-full">
-      {/* Experience Bar */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-500">战力值:</span>
-          <span className="text-lg font-bold text-gray-800">4201</span>
-        </div>
-        <div className="flex items-center gap-4 text-sm text-gray-500">
-          <span>
-            全国排名: <strong className="text-gray-800">156</strong> 个
-          </span>
-          <span>
-            区域排名: <strong className="text-gray-800">12</strong> 个
-          </span>
-          <span>
-            门店排名: <strong className="text-gray-800">2</strong> ↓
-          </span>
-        </div>
-      </div>
-
       {/* Behavior Data Cards */}
       <div className="grid grid-cols-2 gap-4">
         {/* Card 1 - 行为数据 */}
