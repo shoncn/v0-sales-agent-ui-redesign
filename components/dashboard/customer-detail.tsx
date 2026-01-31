@@ -219,7 +219,7 @@ export function CustomerDetail({ onBack }: CustomerDetailProps) {
                   跟进总结
                 </h4>
                 <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-600 leading-relaxed">
-                  王先生10月20日在理想汽车官网添加了心愿单。在国贸从事金融工作，家里有两个孩子，目前开宝马X5已开6年做老车置换。喜欢理想L9的造型，但是在问界M9和理想L9之间纠结犹豫。10月28日自己进行了试驾。
+                  王先生10月20日在理想汽车官网添加了心愿单。在国贸从事金融工作，家里有两个孩子，目前开宝马X3已开6年做老车置换。喜欢理想i6的造型，但是在问界M7和理想i6之间纠结犹豫。10月28日自己进行了试驾。
                 </div>
               </div>
 
@@ -232,7 +232,7 @@ export function CustomerDetail({ onBack }: CustomerDetailProps) {
                 <div className="bg-gray-50 rounded-xl p-4 space-y-2">
                   <div className="flex items-start gap-2 text-sm text-gray-600">
                     <span className="text-emerald-500 font-medium">1.</span>
-                    <span>M9和这款车在智能驾驶方面的区别</span>
+                    <span>M7和这款车在智能驾驶方面的区别</span>
                   </div>
                   <div className="flex items-start gap-2 text-sm text-gray-600">
                     <span className="text-emerald-500 font-medium">2.</span>
@@ -256,7 +256,7 @@ export function CustomerDetail({ onBack }: CustomerDetailProps) {
                     type="button"
                     className="px-4 py-2 bg-emerald-50 text-emerald-600 text-sm font-medium rounded-lg border border-emerald-200 hover:bg-emerald-100 transition-colors"
                   >
-                    发送L9 vs M9对比资料
+                    发送i6的种草视频素材
                   </button>
                   <button
                     type="button"
