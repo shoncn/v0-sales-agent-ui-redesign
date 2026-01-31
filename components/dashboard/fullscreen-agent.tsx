@@ -810,9 +810,9 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 2: Direction question */}
         {marketingStep !== "selectType" && (
           <div className="flex items-start gap-3">
-            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
+            
             <div className="flex-1 space-y-3">
-              <p className="text-sm text-foreground">那么下一步创作哪个方向的营销内容呢</p>
+              <p className="text-sm text-foreground">那么下一步创作哪个方向的营销内容呢？</p>
               
               {marketingStep === "selectDirection" && (
                 <div className="flex flex-wrap gap-2">
