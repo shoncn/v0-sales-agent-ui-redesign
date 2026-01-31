@@ -59,17 +59,10 @@ export function DashboardLayout() {
       {/* Sidebar */}
       <Sidebar activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} onTabChange={handleTabChange} />
 
-      {/* Main Content Area - Agent区域在左，内容区域在右，平分剩余宽度 */}
+      {/* Main Content Area - 内容区域在左，Agent区域在右，平分剩余宽度 */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Chat Assistant - 占50%，位于左侧 */}
-        <ChatAssistant 
-          mode={assistantMode}
-          customerName={selectedCustomerName}
-          onModeChange={handleAssistantModeChange}
-        />
-
-        {/* Main Content - 占50%，位于右侧 */}
-        <main className="w-1/2 overflow-y-auto border-l border-gray-200">
+        {/* Main Content - 占50%，位于左侧 */}
+        <main className="w-1/2 overflow-y-auto border-r border-gray-200">
           {activeTab === "workbench" && (
             <WorkbenchContent onCustomerClick={handleCustomerClick} />
           )}
@@ -92,6 +85,13 @@ export function DashboardLayout() {
             </div>
           )}
         </main>
+
+        {/* Chat Assistant - 占50%，位于右侧 */}
+        <ChatAssistant 
+          mode={assistantMode}
+          customerName={selectedCustomerName}
+          onModeChange={handleAssistantModeChange}
+        />
       </div>
     </div>
   );
