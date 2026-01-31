@@ -12,10 +12,10 @@ import {
   User,
   Target,
   Users,
-  MessageSquare,
+  ListTodo,
   FileText,
-  Settings,
-  Search,
+  FolderOpen,
+  Wrench,
   Home,
   Database,
   Mic,
@@ -31,6 +31,9 @@ import {
   ListOrdered,
   Share2,
   Printer,
+  Search,
+  MessageSquare,
+  Settings,
 } from "lucide-react";
 
 type AgentMode = "default" | "analysis" | "marketingMaterial" | "customerAdvisor" | "acquisitionHelper" | "taskHelper";
@@ -93,6 +96,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["section1", "section2", "section3", "section4", "section5"]));
   const [visibleReportSections, setVisibleReportSections] = useState<string[]>([]);
   const [showRightPanel, setShowRightPanel] = useState(false);
+  const [visibleLines, setVisibleLines] = useState<number>(0); // For line-by-line display
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const rightScrollRef = useRef<HTMLDivElement>(null);
@@ -111,6 +115,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
       setAnalysisComplete(false);
       setVisibleReportSections([]);
       setShowRightPanel(false);
+      setVisibleLines(0);
     }
   }, [isOpen, initialMode]);
 
@@ -125,6 +130,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     setAnalysisComplete(false);
     setVisibleReportSections([]);
     setShowRightPanel(false);
+    setVisibleLines(0);
 
     // Start data modules loading
     setTimeout(() => {
@@ -171,13 +177,20 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     }
   }, [currentThinkingIndex]);
 
-  // Progressive report display
+  // Progressive report display - line by line
   const startProgressiveReport = () => {
-    reportSections.forEach((section, index) => {
-      setTimeout(() => {
-        setVisibleReportSections(prev => [...prev, section.id]);
-      }, index * 600);
-    });
+    // Total number of lines to display (approximately)
+    const totalLines = 50;
+    let lineIndex = 0;
+    
+    const lineInterval = setInterval(() => {
+      if (lineIndex < totalLines) {
+        setVisibleLines(lineIndex + 1);
+        lineIndex++;
+      } else {
+        clearInterval(lineInterval);
+      }
+    }, 80); // 80ms per line for smooth typing effect
   };
 
   // Auto scroll left panel
@@ -229,6 +242,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     setMessage("");
     setVisibleReportSections([]);
     setShowRightPanel(false);
+    setVisibleLines(0);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -451,8 +465,168 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     </div>
   );
 
-  // Render analysis report (right panel) - Progressive display like document editor
+  // Report content lines for line-by-line display
+  const reportLines = [
+    { type: "title", content: "邀约到试驾转化率分析报告" },
+    { type: "h2", content: "一、商机状态更新异常", color: "red" },
+    { type: "p", content: "数据支撑：昨日录入 80 个有效邀约商机，按 30% 历史转化规律，今日应产生 24 个试驾转化，实际仅 12 个，缺口 50%。" },
+    { type: "p", content: "异常点：4 个高优先级商机未及时更新状态，导致统计偏差 + 跟进滞后：" },
+    { type: "li", content: "商机 A-20240501：客户已确认试驾时间（5 月 3 日 14:00）未录入系统" },
+    { type: "li", content: "商机 B-20240502：客户取消邀约未标记，仍显示 \"待试驾\"" },
+    { type: "li", content: "商机 C-20240503、D-20240504：邀约后未同步客户反馈（客户顾虑提车周期）" },
+    { type: "h2", content: "二、商机储备不足", color: "amber" },
+    { type: "p", content: "目标测算：本月需完成 100 个试驾量（转化率 25%），按 40% 邀约成功率，需储备「待邀约」商机 400 个。" },
+    { type: "p", content: "现状缺口：当前系统「待邀约」存量仅 280 个，缺口 120 个，不足以支撑目标达成。" },
+    { type: "conclusion", content: "结论：邀约基数不足，间接拉低转化效率。", color: "amber" },
+    { type: "h2", content: "三、邀约通话质量不达标（团队 + 个体双维度）", color: "orange" },
+    { type: "h3", content: "团队整体表现：" },
+    { type: "li", content: "通次：人均每日 6 通 vs 门店均值 8 通 vs 专家标杆 10 通（频次不足 25%）" },
+    { type: "li", content: "通时：单次 1.8 分钟 vs 门店均值 3.2 分钟 vs 专家标杆 4.5 分钟（深度不足 44%）" },
+    { type: "h3", content: "个体下钻分析（8 名销售顾问）：" },
+    { type: "li-red", content: "通次不足人员：销售顾问张三（日均 3 通）、李四（日均 4 通）" },
+    { type: "li-orange", content: "通时不足人员：销售顾问王五（单次 0.9 分钟）、赵六（单次 1.2 分钟）" },
+    { type: "li-red", content: "双项不达标人员：孙七（日均 3.5 通 + 单次 1.1 分钟）" },
+    { type: "table", content: "sales_table" },
+    { type: "conclusion", content: "结论：5 名销售（占比 62.5%）存在通时/通次不足，孙七、张三、王五为重点关注对象。", color: "orange" },
+    { type: "h2", content: "四、通话质量核心根源", color: "purple" },
+    { type: "h3-red", content: "话术支撑不足（60% 低质量通话）：" },
+    { type: "li", content: "缺少「产品核心卖点讲解」（如 L 系列智能驾驶功能、续航优势）" },
+    { type: "li", content: "未主动介绍「试驾权益」（免费接送、试驾时长 30 分钟 +、专属顾问陪同）" },
+    { type: "li", content: "无法回应客户核心疑问（如 \"充电速度\"\"保养成本\"\"提车周期\"）" },
+    { type: "h3-orange", content: "沟通技巧欠缺（30% 低质量通话）：" },
+    { type: "li", content: "被动回应客户，未主动挖掘需求（如 \"您更关注空间还是动力？\"）" },
+    { type: "li", content: "未明确试驾邀约节点（如 \"明天上午 10 点方便吗？我帮您预留试驾车辆\"）" },
+    { type: "li", content: "孙七的通话中该类问题占比达 80%，需重点培训" },
+    { type: "h2", content: "五、核心问题汇总与改进建议", color: "emerald" },
+    { type: "h3", content: "核心问题（按影响权重排序）：" },
+    { type: "li-num", content: "1. 通话质量不达标（权重最高）" },
+    { type: "li-num", content: "2. 存量商机储备不足" },
+    { type: "li-num", content: "3. 商机状态更新不及时" },
+    { type: "advice-title", content: "改进建议：" },
+    { type: "advice", content: "针对张三、孙七等人员开展专项话术培训" },
+    { type: "advice", content: "制定个体通话通时通次考核标准" },
+    { type: "advice", content: "补充存量商机（目标：补齐 120 个缺口）" },
+    { type: "advice", content: "建立商机状态日清机制，确保当日更新" },
+    { type: "export", content: "导出报告 PDF" },
+  ];
+
+  // Render analysis report (right panel) - Line by line display
   const renderAnalysisReport = () => {
+    const renderLine = (line: typeof reportLines[0], index: number) => {
+      if (index >= visibleLines) return null;
+      
+      switch (line.type) {
+        case "title":
+          return <h1 key={index} className="text-xl font-bold text-gray-800 mb-6 animate-in fade-in duration-200">{line.content}</h1>;
+        case "h2":
+          return (
+            <h2 key={index} className="text-base font-semibold text-gray-800 mt-6 mb-3 flex items-center gap-2 animate-in fade-in duration-200">
+              <span className={`w-1.5 h-1.5 bg-${line.color}-500 rounded-full`} />
+              {line.content}
+            </h2>
+          );
+        case "h3":
+          return <p key={index} className="font-medium text-gray-700 mt-3 mb-1 ml-3.5 animate-in fade-in duration-200">{line.content}</p>;
+        case "h3-red":
+          return <p key={index} className="font-medium text-red-700 mt-3 mb-1 ml-3.5 animate-in fade-in duration-200">{line.content}</p>;
+        case "h3-orange":
+          return <p key={index} className="font-medium text-orange-700 mt-3 mb-1 ml-3.5 animate-in fade-in duration-200">{line.content}</p>;
+        case "p":
+          return <p key={index} className="text-sm text-gray-700 ml-3.5 mb-2 animate-in fade-in duration-200">{line.content}</p>;
+        case "li":
+          return (
+            <div key={index} className="flex items-start gap-2 text-sm text-gray-600 ml-7 mb-1 animate-in fade-in duration-200">
+              <span className="w-1 h-1 bg-gray-400 rounded-full mt-2 shrink-0" />
+              {line.content}
+            </div>
+          );
+        case "li-red":
+          return (
+            <div key={index} className="flex items-start gap-2 text-sm ml-7 mb-1 animate-in fade-in duration-200">
+              <span className="w-1 h-1 bg-red-500 rounded-full mt-2 shrink-0" />
+              <span><span className="text-red-600 font-medium">{line.content.split("：")[0]}：</span><span className="text-gray-600">{line.content.split("：")[1]}</span></span>
+            </div>
+          );
+        case "li-orange":
+          return (
+            <div key={index} className="flex items-start gap-2 text-sm ml-7 mb-1 animate-in fade-in duration-200">
+              <span className="w-1 h-1 bg-orange-500 rounded-full mt-2 shrink-0" />
+              <span><span className="text-orange-600 font-medium">{line.content.split("：")[0]}：</span><span className="text-gray-600">{line.content.split("：")[1]}</span></span>
+            </div>
+          );
+        case "li-num":
+          return (
+            <div key={index} className="text-sm text-gray-600 ml-7 mb-1 animate-in fade-in duration-200">
+              {line.content}
+            </div>
+          );
+        case "conclusion":
+          return (
+            <div key={index} className={`bg-${line.color}-50 rounded-lg p-3 border border-${line.color}-100 ml-3.5 mt-2 mb-2 text-sm text-gray-700 animate-in fade-in duration-200`}>
+              <strong>{line.content.split("：")[0]}：</strong>{line.content.split("：")[1]}
+            </div>
+          );
+        case "table":
+          return (
+            <div key={index} className="overflow-x-auto mt-3 ml-3.5 animate-in fade-in duration-200">
+              <table className="w-full text-xs border border-gray-200 rounded-lg overflow-hidden">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-2 text-left text-gray-600 font-medium">姓名</th>
+                    <th className="px-3 py-2 text-left text-gray-600 font-medium">通次</th>
+                    <th className="px-3 py-2 text-left text-gray-600 font-medium">通时</th>
+                    <th className="px-3 py-2 text-left text-gray-600 font-medium">差距</th>
+                    <th className="px-3 py-2 text-left text-gray-600 font-medium">状态</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {salesData.map((row, i) => (
+                    <tr key={i} className="bg-white">
+                      <td className="px-3 py-2 text-gray-800">{row.name}</td>
+                      <td className="px-3 py-2 text-gray-600">{row.calls}</td>
+                      <td className="px-3 py-2 text-gray-600">{row.duration}</td>
+                      <td className="px-3 py-2 text-gray-600">{row.gap}</td>
+                      <td className="px-3 py-2">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] ${getStatusColor(row.status)}`}>
+                          {row.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        case "advice-title":
+          return (
+            <div key={index} className="bg-emerald-50 rounded-lg p-4 border border-emerald-100 ml-3.5 mt-3 animate-in fade-in duration-200">
+              <p className="font-medium text-emerald-800 mb-2">{line.content}</p>
+            </div>
+          );
+        case "advice":
+          return (
+            <div key={index} className="flex items-start gap-2 text-sm text-gray-700 ml-7 mb-2 animate-in fade-in duration-200">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 shrink-0" />
+              {line.content}
+            </div>
+          );
+        case "export":
+          return (
+            <div key={index} className="pt-4 ml-3.5 animate-in fade-in duration-200">
+              <button
+                type="button"
+                className="flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-500 text-white rounded-lg font-medium active:bg-emerald-600 transition-colors text-sm"
+              >
+                <Download className="w-4 h-4" />
+                {line.content}
+              </button>
+            </div>
+          );
+        default:
+          return null;
+      }
+    };
+
     return (
       <div className="flex flex-col h-full bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {/* Document header toolbar */}
@@ -462,212 +636,40 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             <span className="text-sm font-medium text-gray-700">邀约到试驾转化率分析报告</span>
           </div>
           <div className="flex items-center gap-1">
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
               <Bold className="w-3.5 h-3.5" />
             </button>
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
               <Italic className="w-3.5 h-3.5" />
             </button>
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
               <List className="w-3.5 h-3.5" />
             </button>
             <div className="w-px h-4 bg-gray-300 mx-1" />
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
               <Printer className="w-3.5 h-3.5" />
             </button>
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
               <Share2 className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 ml-2"
+              className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 ml-2 bg-transparent"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Document content */}
+        {/* Document content - Line by line display */}
         <div ref={rightScrollRef} className="flex-1 overflow-y-auto p-6">
-          {/* Document title */}
-          <h1 className="text-xl font-bold text-gray-800 mb-6">邀约到试驾转化率分析报告</h1>
+          {reportLines.map((line, index) => renderLine(line, index))}
           
-          {/* Progressive sections */}
-          <div className="space-y-6">
-            {/* Section 1 */}
-            {visibleReportSections.includes("section1") && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <h2 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
-                  一、商机状态更新异常
-                </h2>
-                <div className="text-sm text-gray-700 space-y-2 ml-3.5">
-                  <p><strong>数据支撑：</strong>昨日录入 80 个有效邀约商机，按 30% 历史转化规律，今日应产生 24 个试驾转化，实际仅 12 个，缺口 50%。</p>
-                  <p><strong>异常点：</strong>4 个高优先级商机未及时更新状态，导致统计偏差 + 跟进滞后：</p>
-                  <ul className="list-disc list-inside ml-4 space-y-1 text-gray-600">
-                    <li>商机 A-20240501：客户已确认试驾时间（5 月 3 日 14:00）未录入系统</li>
-                    <li>商机 B-20240502：客户取消邀约未标记，仍显示 "待试驾"</li>
-                    <li>商机 C-20240503、D-20240504：邀约后未同步客户反馈（客户顾虑提车周期）</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {/* Section 2 */}
-            {visibleReportSections.includes("section2") && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <h2 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-                  二、商机储备不足
-                </h2>
-                <div className="text-sm text-gray-700 space-y-2 ml-3.5">
-                  <p><strong>目标测算：</strong>本月需完成 100 个试驾量（转化率 25%），按 40% 邀约成功率，需储备「待邀约」商机 400 个。</p>
-                  <p><strong>现状缺口：</strong>当前系统「待邀约」存量仅 280 个，缺口 120 个，不足以支撑目标达成。</p>
-                  <p className="bg-amber-50 rounded-lg p-3 border border-amber-100 mt-2"><strong>结论：</strong>邀约基数不足，间接拉低转化效率。</p>
-                </div>
-              </div>
-            )}
-
-            {/* Section 3 */}
-            {visibleReportSections.includes("section3") && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <h2 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-orange-500 rounded-full" />
-                  三、邀约通话质量不达标（团队 + 个体双维度）
-                </h2>
-                <div className="text-sm text-gray-700 space-y-3 ml-3.5">
-                  <div>
-                    <p className="font-medium mb-1">团队整体表现：</p>
-                    <ul className="list-disc list-inside ml-4 space-y-1 text-gray-600">
-                      <li>通次：人均每日 6 通 vs 门店均值 8 通 vs 专家标杆 10 通（频次不足 25%）</li>
-                      <li>通时：单次 1.8 分钟 vs 门店均值 3.2 分钟 vs 专家标杆 4.5 分钟（深度不足 44%）</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="font-medium mb-1">个体下钻分析（8 名销售顾问）：</p>
-                    <ul className="list-disc list-inside ml-4 space-y-1 text-gray-600">
-                      <li><span className="text-red-600">通次不足人员：</span>销售顾问张三（日均 3 通）、李四（日均 4 通）</li>
-                      <li><span className="text-orange-600">通时不足人员：</span>销售顾问王五（单次 0.9 分钟）、赵六（单次 1.2 分钟）</li>
-                      <li><span className="text-red-700">双项不达标人员：</span>孙七（日均 3.5 通 + 单次 1.1 分钟）</li>
-                    </ul>
-                  </div>
-                  {/* Table */}
-                  <div className="overflow-x-auto mt-3">
-                    <table className="w-full text-xs border border-gray-200 rounded-lg overflow-hidden">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-3 py-2 text-left text-gray-600 font-medium">姓名</th>
-                          <th className="px-3 py-2 text-left text-gray-600 font-medium">通次</th>
-                          <th className="px-3 py-2 text-left text-gray-600 font-medium">通时</th>
-                          <th className="px-3 py-2 text-left text-gray-600 font-medium">差距</th>
-                          <th className="px-3 py-2 text-left text-gray-600 font-medium">状态</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {salesData.map((row, i) => (
-                          <tr key={i} className="bg-white">
-                            <td className="px-3 py-2 text-gray-800">{row.name}</td>
-                            <td className="px-3 py-2 text-gray-600">{row.calls}</td>
-                            <td className="px-3 py-2 text-gray-600">{row.duration}</td>
-                            <td className="px-3 py-2 text-gray-600">{row.gap}</td>
-                            <td className="px-3 py-2">
-                              <span className={`px-2 py-0.5 rounded-full text-[10px] ${getStatusColor(row.status)}`}>
-                                {row.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <p className="bg-orange-50 rounded-lg p-3 border border-orange-100"><strong>结论：</strong>5 名销售（占比 62.5%）存在通时/通次不足，孙七、张三、王五为重点关注对象。</p>
-                </div>
-              </div>
-            )}
-
-            {/* Section 4 */}
-            {visibleReportSections.includes("section4") && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <h2 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-                  四、通话质量核心根源
-                </h2>
-                <div className="text-sm text-gray-700 space-y-3 ml-3.5">
-                  <div>
-                    <p className="font-medium text-red-700 mb-1">话术支撑不足（60% 低质量通话）：</p>
-                    <ul className="list-disc list-inside ml-4 space-y-1 text-gray-600">
-                      <li>缺少「产品核心卖点讲解」（如 L 系列智能驾驶功能、续航优势）</li>
-                      <li>未主动介绍「试驾权益」（免费接送、试驾时长 30 分钟 +、专属顾问陪同）</li>
-                      <li>无法回应客户核心疑问（如 "充电速度""保养成本""提车周期"）</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="font-medium text-orange-700 mb-1">沟通技巧欠缺（30% 低质量通话）：</p>
-                    <ul className="list-disc list-inside ml-4 space-y-1 text-gray-600">
-                      <li>被动回应客户，未主动挖掘需求（如 "您更关注空间还是动力？"）</li>
-                      <li>未明确试驾邀约节点（如 "明天上午 10 点方便吗？我帮您预留试驾车辆"）</li>
-                      <li>孙七的通话中该类问题占比达 80%，需重点培训</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Section 5 */}
-            {visibleReportSections.includes("section5") && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <h2 className="text-base font-semibold text-emerald-800 mb-3 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-emerald-600" />
-                  五、核心问题汇总与改进建议
-                </h2>
-                <div className="text-sm text-gray-700 space-y-3 ml-3.5">
-                  <div>
-                    <p className="font-medium mb-2">核心问题（按影响权重排序）：</p>
-                    <ol className="list-decimal list-inside ml-4 space-y-1 text-gray-600">
-                      <li>通话质量不达标（权重最高）</li>
-                      <li>存量商机储备不足</li>
-                      <li>商机状态更新不及时</li>
-                    </ol>
-                  </div>
-                  <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
-                    <p className="font-medium text-emerald-800 mb-2">改进建议：</p>
-                    <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 shrink-0" />
-                        针对张三、孙七等人员开展专项话术培训
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 shrink-0" />
-                        制定个体通话通时通次考核标准
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 shrink-0" />
-                        补充存量商机（目标：补齐 120 个缺口）
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 shrink-0" />
-                        建立商机状态日清机制，确保当日更新
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Export button */}
-            {visibleReportSections.length === 5 && (
-              <div className="pt-4 animate-in fade-in duration-500">
-                <button
-                  type="button"
-                  className="flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-500 text-white rounded-lg font-medium active:bg-emerald-600 transition-colors text-sm"
-                >
-                  <Download className="w-4 h-4" />
-                  导出报告 PDF
-                </button>
-              </div>
-            )}
-          </div>
+          {/* Typing cursor indicator */}
+          {visibleLines > 0 && visibleLines < reportLines.length && (
+            <span className="inline-block w-2 h-4 bg-blue-500 animate-pulse ml-1" />
+          )}
         </div>
       </div>
     );
@@ -730,41 +732,76 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         className="bg-white rounded-2xl shadow-2xl flex overflow-hidden animate-in fade-in zoom-in-95 duration-300"
         style={{ width: '1194px', height: '834px' }}
       >
-        {/* Left Navigation Sidebar */}
-        <div className="w-12 bg-gray-900 flex flex-col items-center py-4 gap-2 shrink-0">
+        {/* Left Navigation Sidebar - White background matching content */}
+        <div className="w-14 bg-white border-r border-gray-100 flex flex-col items-center py-4 gap-1 shrink-0">
+          {/* Avatar */}
+          <button
+            type="button"
+            className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+          >
+            <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-xs font-semibold">店</span>
+            </div>
+          </button>
+          
+          {/* Workbench */}
           <button
             type="button"
             onClick={resetToDefault}
-            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-              mode === "default" && showWelcome ? "bg-gray-700 text-white" : "text-gray-400 hover:bg-gray-800"
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+              mode === "default" && showWelcome ? "bg-emerald-50 text-emerald-600" : "text-gray-400 active:bg-gray-100"
             }`}
+            title="工作台"
           >
-            <Home className="w-5 h-5" />
+            <Home className="w-5 h-5" strokeWidth={1.5} />
           </button>
+          
+          {/* Diagnosis */}
           <button
             type="button"
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 transition-colors"
+            onClick={() => setMode("analysis")}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+              mode === "analysis" ? "bg-emerald-50 text-emerald-600" : "text-gray-400 active:bg-gray-100"
+            }`}
+            title="诊断看板"
           >
-            <Search className="w-5 h-5" />
+            <BarChart3 className="w-5 h-5" strokeWidth={1.5} />
           </button>
+          
+          {/* Task List */}
           <button
             type="button"
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
+            title="任务列表"
           >
-            <MessageSquare className="w-5 h-5" />
+            <ListTodo className="w-5 h-5" strokeWidth={1.5} />
           </button>
+          
+          {/* Customer List */}
           <button
             type="button"
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
+            title="客户列表"
           >
-            <FileText className="w-5 h-5" />
+            <Users className="w-5 h-5" strokeWidth={1.5} />
           </button>
-          <div className="flex-1" />
+          
+          {/* Content Library */}
           <button
             type="button"
-            className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-800 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
+            title="内容库"
           >
-            <Settings className="w-5 h-5" />
+            <FolderOpen className="w-5 h-5" strokeWidth={1.5} />
+          </button>
+          
+          {/* Toolbox */}
+          <button
+            type="button"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
+            title="工具箱"
+          >
+            <Wrench className="w-5 h-5" strokeWidth={1.5} />
           </button>
         </div>
 
