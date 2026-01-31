@@ -318,10 +318,10 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
   const handleRecreateConfirm = () => {
     setMarketingStep("generating");
     setMessage("");
-    // Start video generation progress
+    // Start video generation - 3 seconds total
     let progress = 0;
     const interval = setInterval(() => {
-      progress += Math.random() * 3 + 1;
+      progress += 10; // Faster increments for 3 second completion
       if (progress >= 100) {
         progress = 100;
         clearInterval(interval);
@@ -329,10 +329,10 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         setTimeout(() => {
           setMarketingStep("complete");
           setVideoGenerationComplete(true);
-        }, 500);
+        }, 300);
       }
       setVideoGenerationProgress(Math.min(progress, 100));
-    }, 500);
+    }, 300); // 300ms * 10 increments = 3 seconds
   };
 
   if (!isOpen) return null;
@@ -896,47 +896,35 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           </div>
         )}
 
-        {/* Step 7: Generating */}
+        {/* Step 7: Generating - LLM style text generation */}
         {marketingStep === "generating" && (
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <div className="flex-1 space-y-3">
-              <p className="text-sm text-gray-700">正在生成视频，这可能需要几分钟时间，请稍后回来查看完成状态</p>
-              {/* Video generation progress card */}
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                {/* Video preview placeholder */}
-                <div className="relative aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-white/10 flex items-center justify-center">
-                      <Video className="w-8 h-8 text-white/60 animate-pulse" />
-                    </div>
-                    <p className="text-white/80 text-sm font-medium">视频生成中...</p>
-                    <p className="text-white/50 text-xs mt-1">全网最详细理想i6评测</p>
-                  </div>
-                  {/* Progress overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-4 py-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-white/80 text-xs">生成进度</span>
-                      <span className="text-white text-xs font-medium">{Math.round(videoGenerationProgress)}%</span>
-                    </div>
-                    <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-500"
-                        style={{ width: `${videoGenerationProgress}%` }}
-                      />
-                    </div>
-                  </div>
+            <div className="flex-1">
+              <div className="text-sm text-gray-700 leading-relaxed">
+                <p className="mb-2">正在为您生成视频内容...</p>
+                <div className="space-y-1.5 text-gray-500">
+                  {videoGenerationProgress >= 10 && (
+                    <p className="animate-in fade-in duration-300">- 分析种草视频风格特征</p>
+                  )}
+                  {videoGenerationProgress >= 30 && (
+                    <p className="animate-in fade-in duration-300">- 匹配理想i6产品亮点</p>
+                  )}
+                  {videoGenerationProgress >= 50 && (
+                    <p className="animate-in fade-in duration-300">- 生成视频脚本和画面</p>
+                  )}
+                  {videoGenerationProgress >= 70 && (
+                    <p className="animate-in fade-in duration-300">- 合成视频素材</p>
+                  )}
+                  {videoGenerationProgress >= 90 && (
+                    <p className="animate-in fade-in duration-300">- 优化输出质量</p>
+                  )}
                 </div>
-                <div className="p-3 bg-gray-50">
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <Clock className="w-3 h-3" />
-                    <span>预计需要 1-3 分钟</span>
-                    <span className="text-gray-300">|</span>
-                    <span>种草视频</span>
-                  </div>
-                </div>
+                {videoGenerationProgress < 100 && (
+                  <span className="inline-block w-2 h-4 bg-blue-500 animate-pulse ml-1 mt-2" />
+                )}
               </div>
             </div>
           </div>
