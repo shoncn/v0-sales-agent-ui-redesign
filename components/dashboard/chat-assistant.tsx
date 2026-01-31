@@ -22,6 +22,7 @@ type MarketingStep =
   | "selectDirection" 
   | "showLibraryImage" 
   | "uploadImage" 
+  | "aiThinking"
   | "showGeneratedImage"
   | "shareOptions";
 
@@ -185,11 +186,49 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
       const reader = new FileReader();
       reader.onload = (event) => {
         setUploadedImage(event.target?.result as string);
-        setMarketingStep("showGeneratedImage");
+        // Start AI thinking process
+        setMarketingStep("aiThinking");
       };
       reader.readAsDataURL(file);
     }
   };
+  
+  // AI thinking animation state
+  const [aiThinkingProgress, setAiThinkingProgress] = useState(0);
+  const [aiThinkingSteps, setAiThinkingSteps] = useState<string[]>([]);
+  
+  // AI thinking progress effect
+  useEffect(() => {
+    if (marketingStep === "aiThinking") {
+      const thinkingStepsText = [
+        "正在分析客户画像...",
+        "正在匹配家庭属性特征...",
+        "正在检索二胎家庭营销策略...",
+        "正在生成创意方案...",
+        "正在合成营销素材..."
+      ];
+      
+      setAiThinkingSteps([]);
+      setAiThinkingProgress(0);
+      
+      let stepIndex = 0;
+      const stepInterval = setInterval(() => {
+        if (stepIndex < thinkingStepsText.length) {
+          setAiThinkingSteps(prev => [...prev, thinkingStepsText[stepIndex]]);
+          setAiThinkingProgress((stepIndex + 1) / thinkingStepsText.length * 100);
+          stepIndex++;
+        } else {
+          clearInterval(stepInterval);
+          // Show generated result after thinking completes
+          setTimeout(() => {
+            setMarketingStep("showGeneratedImage");
+          }, 500);
+        }
+      }, 800);
+      
+      return () => clearInterval(stepInterval);
+    }
+  }, [marketingStep]);
 
   // Customer Profile Content
   const renderCustomerProfile = () => (
@@ -404,7 +443,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
       )}
 
       {/* Step 4: Upload Image */}
-      {(marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
+      {(marketingStep === "uploadImage" || marketingStep === "aiThinking" || marketingStep === "showGeneratedImage") && (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
             <div className="flex items-center gap-2">
@@ -434,7 +473,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
                 </button>
               </>
             )}
-            {marketingStep === "showGeneratedImage" && uploadedImage && (
+            {(marketingStep === "aiThinking" || marketingStep === "showGeneratedImage") && uploadedImage && (
               <div className="rounded-xl overflow-hidden border border-gray-200">
                 <img 
                   src={uploadedImage || "/placeholder.svg"} 
@@ -446,8 +485,73 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
           </div>
         </div>
       )}
+      
+      {/* Step 5: AI Thinking Process */}
+      {marketingStep === "aiThinking" && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-purple-100">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Sparkles className="w-4 h-4 text-purple-500" />
+                <div className="absolute inset-0 animate-ping">
+                  <Sparkles className="w-4 h-4 text-purple-400 opacity-50" />
+                </div>
+              </div>
+              <span className="text-sm font-semibold text-purple-800">AI创作中</span>
+            </div>
+          </div>
+          <div className="p-4 space-y-4">
+            {/* Progress bar */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-500">创作进度</span>
+                <span className="text-purple-600 font-medium">{Math.round(aiThinkingProgress)}%</span>
+              </div>
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${aiThinkingProgress}%` }}
+                />
+              </div>
+            </div>
+            
+            {/* Thinking steps */}
+            <div className="space-y-2">
+              {aiThinkingSteps.map((step, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-300"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  {index === aiThinkingSteps.length - 1 && aiThinkingProgress < 100 ? (
+                    <Loader2 className="w-3.5 h-3.5 text-purple-500 animate-spin shrink-0" />
+                  ) : (
+                    <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                      <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                  <span className={`text-sm ${index === aiThinkingSteps.length - 1 && aiThinkingProgress < 100 ? 'text-purple-600' : 'text-gray-600'}`}>
+                    {step}
+                  </span>
+                </div>
+              ))}
+            </div>
+            
+            {/* Thinking animation dots */}
+            {aiThinkingProgress < 100 && (
+              <div className="flex items-center gap-1 justify-center pt-2">
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
-      {/* Step 5: Show Generated Image */}
+      {/* Step 6: Show Generated Image */}
       {marketingStep === "showGeneratedImage" && (
         <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="px-4 py-3 bg-emerald-100/50 border-b border-emerald-200">
