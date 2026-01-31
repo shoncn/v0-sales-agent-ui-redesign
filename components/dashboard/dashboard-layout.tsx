@@ -6,12 +6,16 @@ import { ChatAssistant } from "@/components/dashboard/chat-assistant";
 import { WorkbenchContent } from "@/components/dashboard/workbench-content";
 import { DiagnosisContent } from "@/components/dashboard/diagnosis-content";
 import { CustomerDetail } from "@/components/dashboard/customer-detail";
+import { TaskListContent } from "@/components/dashboard/task-list-content";
 
 type ViewType = "workbench" | "diagnosis" | "tasks" | "customers" | "content" | "tools" | "customer-detail";
+type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy";
 
 export function DashboardLayout() {
   const [activeTab, setActiveTab] = useState<string>("workbench");
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+  const [assistantMode, setAssistantMode] = useState<AssistantMode>("default");
+  const [selectedCustomerName, setSelectedCustomerName] = useState<string>("王先生");
 
   const handleCustomerClick = (customerId: string) => {
     setSelectedCustomerId(customerId);
@@ -28,6 +32,26 @@ export function DashboardLayout() {
     if (tab !== "customer-detail") {
       setSelectedCustomerId(null);
     }
+    // Reset assistant mode when changing tabs
+    setAssistantMode("default");
+  };
+
+  // Task list interactions
+  const handleConsultantClick = (customerName: string) => {
+    setSelectedCustomerName(customerName);
+    setAssistantMode("customerProfile");
+  };
+
+  const handleActionClick = (customerName: string, action: "followUp" | "weChat") => {
+    setSelectedCustomerName(customerName);
+    setAssistantMode("actionStrategy");
+    // Navigate to customer detail
+    setSelectedCustomerId("wang-detail");
+    setActiveTab("customer-detail");
+  };
+
+  const handleAssistantModeChange = (mode: AssistantMode) => {
+    setAssistantMode(mode);
   };
 
   return (
@@ -43,10 +67,16 @@ export function DashboardLayout() {
             <WorkbenchContent onCustomerClick={handleCustomerClick} />
           )}
           {activeTab === "diagnosis" && <DiagnosisContent />}
+          {activeTab === "tasks" && (
+            <TaskListContent 
+              onConsultantClick={handleConsultantClick}
+              onActionClick={handleActionClick}
+            />
+          )}
           {activeTab === "customer-detail" && (
             <CustomerDetail onBack={handleBackFromCustomerDetail} />
           )}
-          {activeTab !== "workbench" && activeTab !== "diagnosis" && activeTab !== "customer-detail" && (
+          {activeTab !== "workbench" && activeTab !== "diagnosis" && activeTab !== "customer-detail" && activeTab !== "tasks" && (
             <div className="p-6 flex items-center justify-center h-full">
               <div className="text-center text-gray-400">
                 <div className="text-4xl mb-2">🚧</div>
@@ -57,7 +87,11 @@ export function DashboardLayout() {
         </main>
 
         {/* Chat Assistant */}
-        <ChatAssistant />
+        <ChatAssistant 
+          mode={assistantMode}
+          customerName={selectedCustomerName}
+          onModeChange={handleAssistantModeChange}
+        />
       </div>
     </div>
   );
