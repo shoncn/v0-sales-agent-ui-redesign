@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, AnnoyedIcon,Sparkles, Plus, Mic, ThumbsUp, ThumbsDown, Share2, RefreshCw, X, Upload, ImageIcon } from "lucide-react";
+import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, AnnoyedIcon,Sparkles, MicIcon, Mic, ThumbsUp, ThumbsDown, Share2, RefreshCw, X, Upload, ImageIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis" | "marketingMaterial";
@@ -1024,14 +1024,14 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
                 className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
                 title="新对话"
               >
-                <Plus className="w-4 h-4" />
+                <MicIcon className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
                 title="语音输入"
               >
-                <Mic className="w-4 h-4" />
+                
               </button>
             </div>
             
