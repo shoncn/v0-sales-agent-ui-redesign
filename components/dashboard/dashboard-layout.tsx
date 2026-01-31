@@ -39,13 +39,13 @@ export function DashboardLayout() {
   // Task list interactions
   const handleConsultantClick = (customerName: string) => {
     setSelectedCustomerName(customerName);
-    setAssistantMode("customerProfile");
+    // 点击顾问助手按钮显示跟进建议/行动策略
+    setAssistantMode("actionStrategy");
   };
 
   const handleActionClick = (customerName: string, action: "followUp" | "weChat") => {
     setSelectedCustomerName(customerName);
-    setAssistantMode("actionStrategy");
-    // Navigate to customer detail
+    // 点击写跟进或发企微只进入用户详情页，不改变Agent显示
     setSelectedCustomerId("wang-detail");
     setActiveTab("customer-detail");
   };
@@ -55,7 +55,7 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="flex h-screen bg-[#F5F7FA]">
+    <div className="flex h-screen bg-[#f8f9fa]">
       {/* Sidebar */}
       <Sidebar activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} onTabChange={handleTabChange} />
 
