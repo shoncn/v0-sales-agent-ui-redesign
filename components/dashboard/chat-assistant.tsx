@@ -2,10 +2,24 @@
 
 import React from "react"
 
-import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, Sparkles, Plus, Mic } from "lucide-react";
+import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, Sparkles, Plus, Mic, ThumbsUp, ThumbsDown, Share2, RefreshCw, X, Upload, ImageIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
-type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis";
+type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis" | "marketingMaterial";
+
+// Conversation history entry
+interface ConversationEntry {
+  id: string;
+  mode: AssistantMode;
+  customerName?: string;
+  content?: {
+    message?: string;
+    steps?: AnalysisStep[];
+    marketingStep?: MarketingStep;
+    uploadedImage?: string | null;
+  };
+  timestamp: Date;
+}
 
 interface AnalysisStep {
   id: string;
@@ -16,10 +30,21 @@ interface AnalysisStep {
   isComplete: boolean;
 }
 
+// Marketing material conversation step
+type MarketingStep = 
+  | "selectType" 
+  | "selectDirection" 
+  | "showLibraryImage" 
+  | "uploadImage" 
+  | "aiThinking"
+  | "showGeneratedImage"
+  | "shareOptions";
+
 interface ChatAssistantProps {
   mode?: AssistantMode;
   customerName?: string;
   onModeChange?: (mode: AssistantMode) => void;
+  onOpenFullscreen?: (mode: string) => void;
 }
 
 const salesData = [
@@ -43,7 +68,7 @@ const analysisSteps: AnalysisStep[] = [
   { id: '7', type: 'report', title: '分析报告已生成', content: `**核心问题汇总：**\n1. 通话质量不达标（权重45%）\n2. 存量商机储备不足（权重30%）\n3. 商机状态更新异常（权重25%）`, isComplete: false },
 ];
 
-export function ChatAssistant({ mode = "default", customerName = "王先生", onModeChange }: ChatAssistantProps) {
+export function ChatAssistant({ mode = "default", customerName = "王先生", onModeChange, onOpenFullscreen }: ChatAssistantProps) {
   const [message, setMessage] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showInitial, setShowInitial] = useState(true);
@@ -52,11 +77,41 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   const [currentMode, setCurrentMode] = useState<AssistantMode>(mode);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Conversation history to preserve content when switching pages
+  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
+  const [hasContent, setHasContent] = useState(false);
+
+  // Marketing material flow state
+  const [marketingStep, setMarketingStep] = useState<MarketingStep>("selectType");
+  const [showSharePopup, setShowSharePopup] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
 
   useEffect(() => {
+    // Save current content to history before switching modes
+    if (currentMode !== "default" && currentMode !== mode && hasContent) {
+      const entry: ConversationEntry = {
+        id: `${Date.now()}`,
+        mode: currentMode,
+        customerName,
+        content: {
+          message,
+          steps: currentSteps,
+          marketingStep,
+          uploadedImage,
+        },
+        timestamp: new Date(),
+      };
+      setConversationHistory(prev => [...prev, entry]);
+    }
+    
     setCurrentMode(mode);
     if (mode === "customerProfile" || mode === "actionStrategy") {
       setShowInitial(false);
+      setHasContent(true);
     }
   }, [mode]);
 
@@ -68,12 +123,19 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     setIsAnalyzing(true);
     setCurrentSteps([]);
     setCurrentStepIndex(0);
+    setHasContent(true);
   };
 
   const enterBusinessDiagnosis = () => {
     setShowInitial(false);
     setCurrentMode("businessDiagnosis");
     setMessage("");
+    setHasContent(true);
+  };
+
+  const enterMarketingMaterial = () => {
+    // Open fullscreen agent with acquisition helper mode
+    onOpenFullscreen?.("acquisitionHelper");
   };
 
   const resetToDefault = () => {
@@ -83,6 +145,11 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     setCurrentStepIndex(-1);
     setIsAnalyzing(false);
     setMessage("");
+    setMarketingStep("selectType");
+    setShowSharePopup(false);
+    setUploadedImage(null);
+    setConversationHistory([]);
+    setHasContent(false);
     onModeChange?.("default");
   };
 
@@ -102,7 +169,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [currentSteps, currentMode]);
+  }, [currentSteps, currentMode, marketingStep]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -149,6 +216,113 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
       e.preventDefault();
       startAnalysis(message);
     }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setUploadedImage(event.target?.result as string);
+        // Start AI thinking process
+        setMarketingStep("aiThinking");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  // AI thinking animation state
+  const [aiThinkingProgress, setAiThinkingProgress] = useState(0);
+  const [aiThinkingSteps, setAiThinkingSteps] = useState<string[]>([]);
+  
+  // AI thinking progress effect
+  useEffect(() => {
+    if (marketingStep === "aiThinking") {
+      const thinkingStepsText = [
+        "正在分析客户画像...",
+        "正在匹配家庭属性特征...",
+        "正在检索二胎家庭营销策略...",
+        "正在生成创意方案...",
+        "正在合成营销素材..."
+      ];
+      
+      setAiThinkingSteps([]);
+      setAiThinkingProgress(0);
+      
+      let stepIndex = 0;
+      const stepInterval = setInterval(() => {
+        if (stepIndex < thinkingStepsText.length) {
+          setAiThinkingSteps(prev => [...prev, thinkingStepsText[stepIndex]]);
+          setAiThinkingProgress((stepIndex + 1) / thinkingStepsText.length * 100);
+          stepIndex++;
+        } else {
+          clearInterval(stepInterval);
+          // Show generated result after thinking completes
+          setTimeout(() => {
+            setMarketingStep("showGeneratedImage");
+          }, 500);
+        }
+      }, 800);
+      
+      return () => clearInterval(stepInterval);
+    }
+  }, [marketingStep]);
+
+  // Render a history entry (completed conversation)
+  const renderHistoryEntry = (entry: ConversationEntry) => {
+    const getModeLabel = (mode: AssistantMode) => {
+      switch(mode) {
+        case "customerProfile": return "客户画像";
+        case "actionStrategy": return "行动策略";
+        case "marketingMaterial": return "营销素材";
+        case "analysis": return "业务分析";
+        case "businessDiagnosis": return "业务诊断";
+        default: return "对话";
+      }
+    };
+    
+    return (
+      <div key={entry.id} className="border-b border-gray-100 pb-4 mb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+            <Sparkles className="w-3 h-3 text-emerald-600" />
+          </div>
+          <span className="text-xs font-medium text-gray-500">{getModeLabel(entry.mode)}</span>
+          {entry.customerName && (
+            <span className="text-xs text-gray-400">- {entry.customerName}</span>
+          )}
+        </div>
+        
+        {entry.mode === "marketingMaterial" && entry.content?.uploadedImage && (
+          <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100">
+            <p className="text-xs text-gray-600 mb-2">已为{entry.customerName}生成营销素材</p>
+            <img 
+              src="/images/l9-family.jpg" 
+              alt="生成的营销图片" 
+              className="w-full h-24 object-cover rounded-lg"
+            />
+          </div>
+        )}
+        
+        {entry.mode === "actionStrategy" && (
+          <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
+            <p className="text-xs text-gray-600">已为{entry.customerName}生成行动策略</p>
+          </div>
+        )}
+        
+        {entry.mode === "customerProfile" && (
+          <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100">
+            <p className="text-xs text-gray-600">已查看{entry.customerName}的客户画像</p>
+          </div>
+        )}
+        
+        {entry.mode === "analysis" && entry.content?.message && (
+          <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+            <p className="text-xs text-gray-600 line-clamp-2">{entry.content.message}</p>
+          </div>
+        )}
+      </div>
+    );
   };
 
   // Customer Profile Content
@@ -218,16 +392,367 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
       </div>
 
       <div className="flex gap-2">
-        <button type="button" className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-xl transition-colors">
+        <button type="button" className="flex-1 px-4 py-3 bg-emerald-500 active:bg-emerald-600 text-white text-sm font-medium rounded-xl transition-colors">
           一键发送至企微
         </button>
-        <button type="button" className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors">
+        <button 
+          type="button" 
+          onClick={enterMarketingMaterial}
+          className="flex-1 px-4 py-3 bg-blue-500 active:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors"
+        >
           生成营销素材
         </button>
-        <button type="button" className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors border border-gray-200">
+        <button type="button" className="px-4 py-3 bg-gray-100 active:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors border border-gray-200">
           编辑
         </button>
       </div>
+    </div>
+  );
+
+  // Marketing Material Conversation Flow - LLM Style
+  const renderMarketingMaterialView = () => (
+    <div className="p-6 space-y-4">
+      {/* Step 1: AI asks for type */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <span className="text-sm font-semibold text-gray-800">素材类型选择</span>
+          </div>
+        </div>
+        <div className="p-4">
+          <p className="text-sm text-gray-700 mb-4">您希望我为<strong className="text-gray-800">{customerName}</strong>创作哪种类型的营销素材呢？</p>
+          
+          {marketingStep === "selectType" && (
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setMarketingStep("selectDirection")}
+                className="flex-1 px-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium active:bg-emerald-100 transition-colors"
+              >
+                图片素材
+              </button>
+              <button
+                type="button"
+                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+              >
+                短视频素材
+              </button>
+            </div>
+          )}
+          {marketingStep !== "selectType" && (
+            <div className="inline-flex px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-lg text-sm">
+              已选择：图片素材
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Step 2: Select Direction */}
+      {(marketingStep === "selectDirection" || marketingStep === "showLibraryImage" || marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Target className="w-4 h-4 text-blue-500" />
+              <span className="text-sm font-semibold text-gray-800">创作方向</span>
+            </div>
+          </div>
+          <div className="p-4">
+            <p className="text-sm text-gray-700 mb-4">那么下一步创作哪个方向的营销内容呢？</p>
+            
+            {marketingStep === "selectDirection" && (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMarketingStep("showLibraryImage")}
+                  className="px-4 py-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium active:bg-emerald-100 transition-colors"
+                >
+                  种草图片
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+                >
+                  新车型亮点宣传
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+                >
+                  促销政策
+                </button>
+              </div>
+            )}
+            {marketingStep !== "selectDirection" && marketingStep !== "selectType" && (
+              <div className="inline-flex px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-sm">
+                已选择：种草图片
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Show Library Image */}
+      {(marketingStep === "showLibraryImage" || marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-purple-500" />
+              <span className="text-sm font-semibold text-gray-800">素材库检索</span>
+            </div>
+          </div>
+          <div className="p-4 space-y-3">
+            <p className="text-sm text-gray-700">已为您检索到<strong className="text-gray-800">L9</strong>的素材库图片，是否直接使用？</p>
+            <div className="rounded-xl overflow-hidden border border-gray-200">
+              <img 
+                src="/images/l9-showroom.jpg" 
+                alt="理想L9展厅图" 
+                className="w-full h-36 object-cover"
+              />
+            </div>
+            
+            {marketingStep === "showLibraryImage" && (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+                >
+                  好的，直接使用
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMarketingStep("uploadImage")}
+                  className="flex-1 px-4 py-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium active:bg-emerald-100 transition-colors"
+                >
+                  不，新创建生成
+                </button>
+              </div>
+            )}
+            {(marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
+              <div className="inline-flex px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-sm">
+                已选择：新创建生成
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Step 4: Upload Image */}
+      {(marketingStep === "uploadImage" || marketingStep === "aiThinking" || marketingStep === "showGeneratedImage") && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Upload className="w-4 h-4 text-amber-500" />
+              <span className="text-sm font-semibold text-gray-800">上传素材</span>
+            </div>
+          </div>
+          <div className="p-4 space-y-3">
+            <p className="text-sm text-gray-700">请上传一张您想要使用的图片，我将基于此进行创作。</p>
+            
+            {marketingStep === "uploadImage" && (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-gray-50 border-2 border-dashed border-gray-300 text-gray-500 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+                >
+                  <Upload className="w-5 h-5" />
+                  点击上传图片
+                </button>
+              </>
+            )}
+            {(marketingStep === "aiThinking" || marketingStep === "showGeneratedImage") && uploadedImage && (
+              <div className="rounded-xl overflow-hidden border border-gray-200">
+                <img 
+                  src={uploadedImage || "/placeholder.svg"} 
+                  alt="用户上传的图片" 
+                  className="w-full h-28 object-cover"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* Step 5: AI Thinking Process */}
+      {marketingStep === "aiThinking" && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-purple-100">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Sparkles className="w-4 h-4 text-purple-500" />
+                <div className="absolute inset-0 animate-ping">
+                  <Sparkles className="w-4 h-4 text-purple-400 opacity-50" />
+                </div>
+              </div>
+              <span className="text-sm font-semibold text-purple-800">AI创作中</span>
+            </div>
+          </div>
+          <div className="p-4 space-y-4">
+            {/* Progress bar */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-500">创作进度</span>
+                <span className="text-purple-600 font-medium">{Math.round(aiThinkingProgress)}%</span>
+              </div>
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${aiThinkingProgress}%` }}
+                />
+              </div>
+            </div>
+            
+            {/* Thinking steps */}
+            <div className="space-y-2">
+              {aiThinkingSteps.map((step, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-300"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  {index === aiThinkingSteps.length - 1 && aiThinkingProgress < 100 ? (
+                    <Loader2 className="w-3.5 h-3.5 text-purple-500 animate-spin shrink-0" />
+                  ) : (
+                    <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                      <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                  <span className={`text-sm ${index === aiThinkingSteps.length - 1 && aiThinkingProgress < 100 ? 'text-purple-600' : 'text-gray-600'}`}>
+                    {step}
+                  </span>
+                </div>
+              ))}
+            </div>
+            
+            {/* Thinking animation dots */}
+            {aiThinkingProgress < 100 && (
+              <div className="flex items-center gap-1 justify-center pt-2">
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Step 6: Show Generated Image */}
+      {marketingStep === "showGeneratedImage" && (
+        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-emerald-100/50 border-b border-emerald-200">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-emerald-600" />
+              <span className="text-sm font-semibold text-emerald-800">AI创作完成</span>
+            </div>
+          </div>
+          <div className="p-4 space-y-3">
+            <div className="text-sm text-gray-700 leading-relaxed">
+              <p>根据您提供的<strong className="text-gray-800">{customerName}</strong>的信息结合家庭属性：</p>
+              <ul className="mt-2 space-y-1 ml-4">
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500 mt-1">-</span>
+                  <span>考虑已成为<strong className="text-emerald-700">二胎家庭</strong></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500 mt-1">-</span>
+                  <span>充满童趣、可爱的氛围有助于拉近彼此感情</span>
+                </li>
+              </ul>
+            </div>
+            <div className="rounded-xl overflow-hidden border border-emerald-200 bg-white">
+              <img 
+                src="/images/l9-family.jpg" 
+                alt="生成的营销图片" 
+                className="w-full h-44 object-cover"
+              />
+              {/* Action buttons */}
+              <div className="flex items-center justify-between px-3 py-2.5 bg-white border-t border-gray-100">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => { setLiked(!liked); setDisliked(false); }}
+                    className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${liked ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 active:bg-gray-100'}`}
+                  >
+                    <ThumbsUp className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setDisliked(!disliked); setLiked(false); }}
+                    className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${disliked ? 'bg-red-100 text-red-600' : 'text-gray-400 active:bg-gray-100'}`}
+                  >
+                    <ThumbsDown className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowSharePopup(true)}
+                    className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100 transition-colors"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100 transition-colors"
+                  >
+                    <RefreshCw className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share Popup */}
+      {showSharePopup && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setShowSharePopup(false)}>
+          <div className="bg-white rounded-2xl p-5 w-72 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-800">分享至</h3>
+              <button
+                type="button"
+                onClick={() => setShowSharePopup(false)}
+                className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => setShowSharePopup(false)}
+                className="w-full flex items-center gap-3 px-4 py-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm font-medium active:bg-green-100 transition-colors"
+              >
+                <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                  <Users className="w-5 h-5 text-white" />
+                </div>
+                企业微信
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSharePopup(false)}
+                className="w-full flex items-center gap-3 px-4 py-4 bg-blue-50 border border-blue-200 rounded-xl text-blue-700 text-sm font-medium active:bg-blue-100 transition-colors"
+              >
+                <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5 text-white" />
+                </div>
+                微信朋友圈
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -235,44 +760,47 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   const renderDefaultView = () => (
     <div className="flex flex-col items-center justify-center h-full px-6 py-10">
       {/* Logo/Avatar */}
-      <div className="w-14 h-14 mb-5 rounded bg-[#00b8a9] flex items-center justify-center">
+      <div className="w-14 h-14 mb-5 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg">
         <Sparkles className="w-7 h-7 text-white" />
       </div>
 
-      <h2 className="text-lg font-semibold text-gray-900 mb-2">Sales Agent</h2>
+      <h2 className="text-lg font-semibold text-gray-800 mb-2">Sales Agent</h2>
       <p className="text-sm text-gray-500 text-center mb-6 max-w-sm">
         AI销售专家，帮您分析业务数据、管理客户、提升销售效率
       </p>
 
-      {/* Quick Action Chips */}
-      <div className="w-full max-w-md grid grid-cols-2 gap-2 mb-6">
+      {/* Quick Action Chips - triggers fullscreen */}
+      <div className="w-full max-w-md grid grid-cols-2 gap-3 mb-6">
         <button
           type="button"
-          onClick={enterBusinessDiagnosis}
-          className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded hover:border-[#00b8a9] hover:bg-[#e6f7f6] transition-all text-left"
+          onClick={() => onOpenFullscreen?.("analysis")}
+          className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-emerald-300 active:bg-emerald-50 transition-all text-left"
         >
-          <BarChart3 className="w-4 h-4 text-[#00b8a9] shrink-0" />
+          <BarChart3 className="w-5 h-5 text-emerald-500 shrink-0" />
           <span className="text-sm text-gray-700">业务诊断</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded hover:border-[#00b8a9] hover:bg-[#e6f7f6] transition-all text-left"
+          onClick={() => onOpenFullscreen?.("customerAdvisor")}
+          className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-blue-300 active:bg-blue-50 transition-all text-left"
         >
-          <User className="w-4 h-4 text-[#00b8a9] shrink-0" />
+          <User className="w-5 h-5 text-blue-500 shrink-0" />
           <span className="text-sm text-gray-700">客户顾问</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded hover:border-[#00b8a9] hover:bg-[#e6f7f6] transition-all text-left"
+          onClick={() => onOpenFullscreen?.("acquisitionHelper")}
+          className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-amber-300 active:bg-amber-50 transition-all text-left"
         >
-          <Users className="w-4 h-4 text-[#00b8a9] shrink-0" />
+          <Users className="w-5 h-5 text-amber-500 shrink-0" />
           <span className="text-sm text-gray-700">获客助手</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded hover:border-[#00b8a9] hover:bg-[#e6f7f6] transition-all text-left"
+          onClick={() => onOpenFullscreen?.("taskHelper")}
+          className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-rose-300 active:bg-rose-50 transition-all text-left"
         >
-          <Target className="w-4 h-4 text-[#00b8a9] shrink-0" />
+          <Target className="w-5 h-5 text-rose-500 shrink-0" />
           <span className="text-sm text-gray-700">帮我干活</span>
         </button>
       </div>
@@ -302,7 +830,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
             key={i}
             type="button"
             onClick={() => startAnalysis(q)}
-            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all"
+            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 active:border-emerald-300 active:bg-emerald-50/50 transition-all"
           >
             {q}
           </button>
@@ -412,7 +940,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
                 <div className="px-4 pb-4">
                   <button
                     type="button"
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-500 active:bg-emerald-600 text-white rounded-xl font-medium transition-colors"
                   >
                     <Download className="w-4 h-4" />
                     导出完整分析报告
@@ -435,13 +963,38 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
 
   return (
     <aside className="w-[330px] bg-white flex flex-col shrink-0 border-l border-gray-200">
+      {/* Header with New Topic Button */}
+      {hasContent && (
+        <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <span className="text-sm font-medium text-gray-700">Sales Agent</span>
+          </div>
+          <button
+            type="button"
+            onClick={resetToDefault}
+            className="text-xs text-gray-400 active:text-gray-600 transition-colors"
+          >
+            开启新话题
+          </button>
+        </div>
+      )}
+      
       {/* Content Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
+        {/* Conversation History */}
+        {conversationHistory.length > 0 && (
+          <div className="p-4">
+            {conversationHistory.map(entry => renderHistoryEntry(entry))}
+          </div>
+        )}
+        
         {currentMode === "default" && showInitial && renderDefaultView()}
         {currentMode === "businessDiagnosis" && renderBusinessDiagnosisView()}
         {currentMode === "analysis" && renderAnalysisView()}
         {currentMode === "customerProfile" && renderCustomerProfile()}
         {currentMode === "actionStrategy" && renderActionStrategy()}
+        {currentMode === "marketingMaterial" && renderMarketingMaterialView()}
       </div>
 
       {/* LLM Style Input Area */}
@@ -468,14 +1021,14 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
               <button
                 type="button"
                 onClick={resetToDefault}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
                 title="新对话"
               >
                 <Plus className="w-4 h-4" />
               </button>
               <button
                 type="button"
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
                 title="语音输入"
               >
                 <Mic className="w-4 h-4" />
@@ -486,7 +1039,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
               type="button"
               onClick={() => message.trim() && startAnalysis(message)}
               disabled={isAnalyzing || !message.trim()}
-              className="w-8 h-8 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-colors"
+              className="w-8 h-8 bg-emerald-500 active:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-colors"
             >
               {isAnalyzing ? (
                 <Loader2 className="w-4 h-4 text-white animate-spin" />

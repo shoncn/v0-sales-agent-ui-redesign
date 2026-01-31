@@ -1,8 +1,6 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
-
-interface CustomerCardProps {
+interface CustomerItemProps {
   name: string;
   phone: string;
   lastFollowUp: string;
@@ -11,51 +9,43 @@ interface CustomerCardProps {
   onClick?: () => void;
 }
 
-function CustomerCard({
+function CustomerItem({
   name,
   phone,
   lastFollowUp,
   tags,
   isHighIntent,
   onClick,
-}: CustomerCardProps) {
+}: CustomerItemProps) {
+  // 标签颜色规范: 达标-绿色, 未达标-红色, 待改进-黄色, 其他-中性灰
   const getTagStyles = (variant: string) => {
     switch (variant) {
-      case "danger":
-        return "bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100";
-      case "warning":
-        return "bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100";
-      case "info":
-        return "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
-      default:
-        return "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100";
+      case "danger": // 未达标/紧急
+        return "bg-red-50 text-red-600 border-red-200";
+      case "warning": // 待改进/注意
+        return "bg-amber-50 text-amber-600 border-amber-200";
+      case "info": // 达标/正常
+        return "bg-emerald-50 text-emerald-600 border-emerald-200";
+      default: // 其他信息
+        return "bg-slate-100 text-slate-600 border-slate-200";
     }
   };
 
   return (
     <div
-      className="p-4 bg-gray-50/50 rounded-xl border border-gray-100 hover:border-emerald-200 hover:shadow-sm transition-all duration-200 cursor-pointer"
+      className="p-4 border-b border-gray-100 last:border-b-0 active:bg-gray-50/50 transition-colors cursor-pointer"
       onClick={onClick}
       onKeyDown={(e) => e.key === "Enter" && onClick?.()}
       role="button"
       tabIndex={0}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-base font-semibold text-gray-800">{name}</span>
-          {isHighIntent && (
-            <span className="px-2 py-0.5 bg-gradient-to-r from-orange-400 to-rose-400 text-white text-xs font-medium rounded-full">
-              高意向
-            </span>
-          )}
-        </div>
-        <button
-          type="button"
-          className="w-8 h-8 bg-emerald-500 hover:bg-emerald-600 rounded-full flex items-center justify-center transition-colors"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MessageCircle className="w-4 h-4 text-white" />
-        </button>
+      <div className="flex items-start justify-between mb-2">
+        <span className="text-base font-semibold text-gray-800">{name}</span>
+        {isHighIntent && (
+          <span className="px-3 py-1 bg-gradient-to-r from-orange-400 to-rose-400 text-white text-xs font-medium rounded-lg">
+            高意向
+          </span>
+        )}
       </div>
 
       <div className="space-y-1 text-sm text-gray-500 mb-3">
@@ -79,9 +69,10 @@ function CustomerCard({
 
 interface CustomerTasksProps {
   onCustomerClick?: (customerId: string) => void;
+  onViewAllTasks?: () => void;
 }
 
-export function CustomerTasks({ onCustomerClick }: CustomerTasksProps) {
+export function CustomerTasks({ onCustomerClick, onViewAllTasks }: CustomerTasksProps) {
   const topCustomers = [
     {
       id: "wang",
@@ -109,20 +100,65 @@ export function CustomerTasks({ onCustomerClick }: CustomerTasksProps) {
         { label: "保存心愿单", variant: "info" as const },
         { label: "3月4日已试驾", variant: "info" as const },
         { label: "对比问界M7", variant: "outline" as const },
-        { label: "公户购车人", variant: "outline" as const },
+      ],
+    },
+    {
+      id: "zhang",
+      name: "张先生",
+      phone: "138****5678",
+      lastFollowUp: "2025-06-25",
+      isHighIntent: false,
+      tags: [
+        { label: "待跟进", variant: "warning" as const },
+        { label: "预算20~30w", variant: "info" as const },
+        { label: "首次到店", variant: "outline" as const },
+      ],
+    },
+    {
+      id: "liu",
+      name: "刘女士",
+      phone: "159****3456",
+      lastFollowUp: "2025-06-22",
+      isHighIntent: true,
+      tags: [
+        { label: "试驾排程", variant: "info" as const },
+        { label: "预算40~60w", variant: "warning" as const },
+        { label: "置换需求", variant: "danger" as const },
+        { label: "对比蔚来ES8", variant: "outline" as const },
+      ],
+    },
+    {
+      id: "chen",
+      name: "陈先生",
+      phone: "186****7890",
+      lastFollowUp: "2025-06-20",
+      isHighIntent: false,
+      tags: [
+        { label: "战败激活", variant: "danger" as const },
+        { label: "价格敏感", variant: "warning" as const },
+        { label: "对比小鹏G9", variant: "outline" as const },
       ],
     },
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <h3 className="text-base font-semibold text-gray-800 mb-4">
-        客户跟进任务 Top 5
-      </h3>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between shrink-0">
+        <h3 className="text-base font-semibold text-gray-800">
+          客户跟进任务 <span className="text-emerald-600">Top 5</span>
+        </h3>
+        <button
+          type="button"
+          onClick={onViewAllTasks}
+          className="text-sm text-emerald-600 active:text-emerald-700"
+        >
+          全部任务
+        </button>
+      </div>
 
-      <div className="space-y-4">
+      <div className="divide-y divide-gray-100 overflow-y-auto flex-1">
         {topCustomers.map((customer) => (
-          <CustomerCard
+          <CustomerItem
             key={customer.id}
             {...customer}
             onClick={() => onCustomerClick?.(customer.id)}

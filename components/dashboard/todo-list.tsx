@@ -3,32 +3,37 @@
 interface TodoItemProps {
   name: string;
   phone: string;
-  lastFollowUp: string;
+  timeLabel?: string;
+  timeValue?: string;
   tags: { label: string; variant: "danger" | "warning" | "info" | "outline" }[];
   actionLabel?: string;
   actionType?: "primary" | "warning" | "info";
   carLabels?: string[];
+  lastFollowUp?: string;
 }
 
 function TodoItem({
   name,
   phone,
-  lastFollowUp,
+  timeLabel,
+  timeValue,
   tags,
   actionLabel,
   actionType = "primary",
   carLabels,
+  lastFollowUp,
 }: TodoItemProps) {
+  // 标签颜色规范: 达标-绿色, 未达标-红色, 待改进-黄色, 其他-中性灰
   const getTagStyles = (variant: string) => {
     switch (variant) {
-      case "danger":
-        return "bg-rose-50 text-rose-600 border-rose-200";
-      case "warning":
+      case "danger": // 未达标/紧急
+        return "bg-red-50 text-red-600 border-red-200";
+      case "warning": // 待改进/注意
         return "bg-amber-50 text-amber-600 border-amber-200";
-      case "info":
-        return "bg-blue-50 text-blue-600 border-blue-200";
-      default:
-        return "bg-gray-50 text-gray-600 border-gray-200";
+      case "info": // 达标/正常
+        return "bg-emerald-50 text-emerald-600 border-emerald-200";
+      default: // 其他信息
+        return "bg-slate-100 text-slate-600 border-slate-200";
     }
   };
 
@@ -58,7 +63,7 @@ function TodoItem({
 
       <div className="space-y-1 text-sm text-gray-500 mb-3">
         <div>客户手机: {phone}</div>
-        <div>上次跟进时间: {lastFollowUp}</div>
+        {timeLabel && timeValue && <div>{timeLabel}: {timeValue}</div>}
         {carLabels && carLabels.length > 0 && (
           <div className="flex items-center gap-2">
             <span>车主标签:</span>
@@ -90,7 +95,8 @@ export function TodoList() {
     {
       name: "刘女士",
       phone: "1397****2950",
-      lastFollowUp: "2025-06-28",
+      timeLabel: "预约试驾时间",
+      timeValue: "2025-06-28 14:00",
       actionLabel: "试驾排程",
       actionType: "primary" as const,
       tags: [
@@ -102,7 +108,8 @@ export function TodoList() {
     {
       name: "董明",
       phone: "1397****2950",
-      lastFollowUp: "2025-06-28",
+      timeLabel: "上次活跃时间",
+      timeValue: "2025-06-28",
       actionLabel: "战败激活",
       actionType: "warning" as const,
       tags: [
@@ -114,7 +121,6 @@ export function TodoList() {
     {
       name: "于浩天",
       phone: "1397****2950",
-      lastFollowUp: "2025-06-28",
       actionLabel: "车主任务",
       actionType: "info" as const,
       carLabels: ["理想L6", "理想L8"],
@@ -128,7 +134,7 @@ export function TodoList() {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-6 pb-4 border-b border-gray-100">
+      <div className="px-4 py-3 border-b border-gray-100">
         <h3 className="text-base font-semibold text-gray-800">
           待办事项 <span className="text-emerald-600">3</span>
         </h3>
