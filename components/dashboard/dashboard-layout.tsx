@@ -1,7 +1,9 @@
 "use client";
 
+import { Sidebar } from "@/components/ui/sidebar"
+
 import { useState } from "react";
-import { Sidebar } from "@/components/dashboard/sidebar";
+import { FloatingMenu } from "@/components/dashboard/floating-menu";
 import { ChatAssistant } from "@/components/dashboard/chat-assistant";
 import { WorkbenchContent } from "@/components/dashboard/workbench-content";
 import { DiagnosisContent } from "@/components/dashboard/diagnosis-content";
@@ -55,9 +57,9 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="w-[1194px] h-[834px] mx-auto flex bg-[#F5F7FA] overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} onTabChange={handleTabChange} />
+    <div className="w-[1194px] h-[834px] mx-auto flex bg-[#F5F7FA] overflow-hidden relative rounded-lg shadow-xl">
+      {/* Floating Menu */}
+      <FloatingMenu activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} onTabChange={handleTabChange} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
