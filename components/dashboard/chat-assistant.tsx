@@ -235,11 +235,11 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   const renderDefaultView = () => (
     <div className="flex flex-col items-center justify-center h-full px-6 py-10">
       {/* Logo/Avatar */}
-      <div className="w-14 h-14 mb-5 rounded bg-[#00b8a9] flex items-center justify-center">
+      <div className="w-14 h-14 mb-5 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg">
         <Sparkles className="w-7 h-7 text-white" />
       </div>
 
-      <h2 className="text-lg font-semibold text-gray-900 mb-2">Sales Agent</h2>
+      <h2 className="text-lg font-semibold text-gray-800 mb-2">Sales Agent</h2>
       <p className="text-sm text-gray-500 text-center mb-6 max-w-sm">
         AI销售专家，帮您分析业务数据、管理客户、提升销售效率
       </p>
@@ -249,30 +249,30 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
         <button
           type="button"
           onClick={enterBusinessDiagnosis}
-          className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded hover:border-[#00b8a9] hover:bg-[#e6f7f6] transition-all text-left"
+          className="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left"
         >
-          <BarChart3 className="w-4 h-4 text-[#00b8a9] shrink-0" />
+          <BarChart3 className="w-4 h-4 text-emerald-500 shrink-0" />
           <span className="text-sm text-gray-700">业务诊断</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded hover:border-[#00b8a9] hover:bg-[#e6f7f6] transition-all text-left"
+          className="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all text-left"
         >
-          <User className="w-4 h-4 text-[#00b8a9] shrink-0" />
+          <User className="w-4 h-4 text-blue-500 shrink-0" />
           <span className="text-sm text-gray-700">客户顾问</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded hover:border-[#00b8a9] hover:bg-[#e6f7f6] transition-all text-left"
+          className="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-amber-300 hover:bg-amber-50 transition-all text-left"
         >
-          <Users className="w-4 h-4 text-[#00b8a9] shrink-0" />
+          <Users className="w-4 h-4 text-amber-500 shrink-0" />
           <span className="text-sm text-gray-700">获客助手</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded hover:border-[#00b8a9] hover:bg-[#e6f7f6] transition-all text-left"
+          className="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-rose-300 hover:bg-rose-50 transition-all text-left"
         >
-          <Target className="w-4 h-4 text-[#00b8a9] shrink-0" />
+          <Target className="w-4 h-4 text-rose-500 shrink-0" />
           <span className="text-sm text-gray-700">帮我干活</span>
         </button>
       </div>

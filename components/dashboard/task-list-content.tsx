@@ -30,18 +30,18 @@ function TaskCard({
   onWeChatClick,
 }: TaskCardProps) {
   return (
-    <div className="bg-white rounded p-3 shadow-sm border border-gray-200 hover:shadow transition-shadow">
+    <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-medium text-gray-900 text-sm">{name}</span>
+          <span className="font-semibold text-gray-800 text-sm">{name}</span>
           {statusTag && (
-            <span className="px-1.5 py-0.5 bg-[#00b8a9] text-white text-[9px] rounded font-medium">
+            <span className="px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[9px] rounded-full font-medium">
               {statusTag}
             </span>
           )}
           {secondaryTag && (
-            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[9px] rounded">
+            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[9px] rounded-full border border-gray-200">
               {secondaryTag}
             </span>
           )}
@@ -58,7 +58,7 @@ function TaskCard({
         {redTags.map((tag, i) => (
           <span
             key={`red-${i}`}
-            className="px-1.5 py-0.5 bg-rose-50 text-rose-600 text-[9px] rounded"
+            className="px-1.5 py-0.5 bg-rose-50 text-rose-600 text-[9px] rounded-md border border-rose-200"
           >
             {tag}
           </span>
@@ -66,7 +66,7 @@ function TaskCard({
         {whiteTags.map((tag, i) => (
           <span
             key={`white-${i}`}
-            className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[9px] rounded"
+            className="px-1.5 py-0.5 bg-gray-50 text-gray-600 text-[9px] rounded-md border border-gray-200"
           >
             {tag}
           </span>
@@ -78,7 +78,7 @@ function TaskCard({
         <button
           type="button"
           onClick={onConsultantClick}
-          className="w-full flex items-center justify-center gap-1 px-2 py-1.5 bg-[#e6f7f6] hover:bg-[#d0f0ee] text-[#00897b] text-[10px] rounded transition-colors"
+          className="w-full flex items-center justify-center gap-1 px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] rounded-md border border-emerald-200 transition-colors"
         >
           <MessageSquare className="w-3 h-3" />
           顾问助手
@@ -87,14 +87,14 @@ function TaskCard({
           <button
             type="button"
             onClick={onFollowUpClick}
-            className="flex-1 px-2 py-1.5 bg-[#e6f7f6] hover:bg-[#d0f0ee] text-[#00897b] text-[10px] rounded transition-colors"
+            className="flex-1 px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] rounded-md border border-emerald-200 transition-colors"
           >
             写跟进
           </button>
           <button
             type="button"
             onClick={onWeChatClick}
-            className="flex-1 px-2 py-1.5 bg-[#e6f7f6] hover:bg-[#d0f0ee] text-[#00897b] text-[10px] rounded transition-colors"
+            className="flex-1 px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] rounded-md border border-emerald-200 transition-colors"
           >
             发企微
           </button>
@@ -248,9 +248,9 @@ export function TaskListContent({ onConsultantClick, onActionClick }: TaskListCo
   ];
 
   return (
-    <div className="h-full flex flex-col bg-[#f8f9fa]">
+    <div className="h-full flex flex-col bg-[#F5F7FA]">
       {/* Header */}
-      <div className="bg-white px-6 py-4 border-b border-gray-200 shrink-0">
+      <div className="bg-white px-6 py-4 border-b border-gray-100 shrink-0">
         <div className="flex items-center justify-between">
           {/* Task Tabs */}
           <div className="flex items-center gap-2">
@@ -314,11 +314,11 @@ export function TaskListContent({ onConsultantClick, onActionClick }: TaskListCo
       <div className="flex-1 p-3 overflow-x-auto">
         <div className="flex gap-2 h-full min-w-max">
           {swimlanes.map((lane, laneIndex) => (
-            <div key={laneIndex} className="w-56 flex flex-col bg-white rounded border border-gray-200 shrink-0">
+            <div key={laneIndex} className="w-56 flex flex-col bg-gray-50 rounded-xl shrink-0">
               {/* Lane Header */}
-              <div className="px-3 py-2.5 border-b border-gray-200 shrink-0">
-                <h3 className="font-medium text-gray-900 text-sm">
-                  {lane.title} <span className="text-gray-400 font-normal ml-1">{lane.count}</span>
+              <div className="px-3 py-2 border-b border-gray-200 shrink-0">
+                <h3 className="font-semibold text-gray-800 text-sm">
+                  {lane.title} <span className="text-gray-400 font-normal">{lane.count}</span>
                 </h3>
               </div>
 
