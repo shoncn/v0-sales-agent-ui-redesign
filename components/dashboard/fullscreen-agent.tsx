@@ -21,23 +21,17 @@ import {
   Mic,
   Plus,
   ChevronRight,
-  ChevronDown,
   AlertTriangle,
   Download,
   CheckCircle2,
   Bold,
   Italic,
   List,
-  ListOrdered,
   Share2,
   Printer,
-  Search,
-  MessageSquare,
-  Settings,
   Play,
   ImageIcon,
   Video,
-  Clock,
 } from "lucide-react";
 
 type AgentMode = "default" | "analysis" | "marketingMaterial" | "customerAdvisor" | "acquisitionHelper" | "taskHelper";
@@ -351,8 +345,8 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
   // Input area component - matches small Agent style exactly
   const renderInputArea = () => (
-    <div className="p-4 shrink-0 bg-white">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="p-4 shrink-0 bg-background">
+      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
         {/* Textarea */}
         <div className="px-4 pt-3 pb-2">
           <textarea
@@ -363,25 +357,25 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             placeholder="输入您的问题..."
             disabled={isAnalyzing}
             rows={1}
-            className="w-full resize-none text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-transparent"
+            className="w-full resize-none text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed bg-transparent"
             style={{ minHeight: '24px', maxHeight: '120px' }}
           />
         </div>
         
         {/* Bottom Bar with Buttons */}
-        <div className="flex items-center justify-between px-3 py-2 border-t border-gray-100">
+        <div className="flex items-center justify-between px-3 py-2 border-t border-border">
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={resetToDefault}
-              className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
+              className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-accent transition-colors text-muted-foreground active:text-foreground"
               title="新对话"
             >
               <Plus className="w-4 h-4" />
             </button>
             <button
               type="button"
-              className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
+              className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-accent transition-colors text-muted-foreground active:text-foreground"
               title="语音输入"
             >
               <Mic className="w-4 h-4" />
@@ -392,12 +386,12 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             type="button"
             onClick={() => message.trim() && startAnalysis()}
             disabled={isAnalyzing || !message.trim()}
-            className="w-8 h-8 bg-emerald-500 active:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-colors"
+            className="w-8 h-8 bg-success active:bg-success/90 disabled:bg-muted disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-colors"
           >
             {isAnalyzing ? (
-              <Loader2 className="w-4 h-4 text-white animate-spin" />
+              <Loader2 className="w-4 h-4 text-success-foreground animate-spin" />
             ) : (
-              <Send className="w-4 h-4 text-white" />
+              <Send className="w-4 h-4 text-success-foreground" />
             )}
           </button>
         </div>
@@ -411,22 +405,20 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
       <div className="max-w-xl mx-auto px-6 py-8">
         {/* AI Welcome Message */}
         <div className="flex items-start gap-3 mb-6">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <div className="flex-1 text-sm text-gray-700 leading-relaxed">
+          
+          <div className="flex-1 text-sm text-foreground leading-relaxed">
             <p className="mb-4">您好，店长！我是理想同学，您的AI销售助手。我可以帮您：</p>
             <ul className="space-y-2 mb-4">
               <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0" />
+                <span className="w-1.5 h-1.5 bg-info rounded-full shrink-0" />
                 分析销售数据，发现异常环节
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0" />
+                <span className="w-1.5 h-1.5 bg-info rounded-full shrink-0" />
                 诊断业务问题，定位根本原因
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0" />
+                <span className="w-1.5 h-1.5 bg-info rounded-full shrink-0" />
                 提供改进建议，提升转化效率
               </li>
             </ul>
@@ -438,19 +430,19 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         <button
           type="button"
           onClick={startAnalysis}
-          className="w-full bg-amber-50 border border-amber-200 rounded-xl p-4 text-left active:bg-amber-100 transition-colors"
+          className="w-full bg-warning-muted border border-warning/30 rounded-xl p-4 text-left active:bg-warning-muted/80 transition-colors"
         >
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
-              <AlertTriangle className="w-4 h-4 text-amber-600" />
+            <div className="w-8 h-8 bg-warning/20 rounded-lg flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-4 h-4 text-warning-foreground" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-amber-800 mb-1">已发现异常：邀约到试驾转化率显著偏低</p>
-              <p className="text-xs text-amber-700 leading-relaxed">
+              <p className="text-sm font-medium text-warning-foreground mb-1">已发现异常：邀约到试驾转化率显著偏低</p>
+              <p className="text-xs text-warning-foreground/80 leading-relaxed">
                 当前转化率为 <strong>15%</strong>，低于目标值（25%）的 <strong>10个百分点</strong>，也低于行业均值（22%）的 <strong>7个百分点</strong>。该环节被系统标记为高风险环节，建议重点分析原因。
               </p>
             </div>
-            <ChevronRight className="w-4 h-4 text-amber-500 shrink-0 mt-1" />
+            <ChevronRight className="w-4 h-4 text-warning shrink-0 mt-1" />
           </div>
         </button>
       </div>
@@ -463,8 +455,8 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
       <div className={`${showRightPanel ? 'px-6' : 'max-w-xl mx-auto px-6'} py-6 space-y-4`}>
         {/* User question - natural text, no background */}
         <div className="flex justify-end mb-4">
-          <div className="bg-gray-100 rounded-2xl px-4 py-2.5 max-w-[85%]">
-            <p className="text-sm text-gray-700">
+          <div className="bg-muted rounded-2xl px-4 py-2.5 max-w-[85%]">
+            <p className="text-sm text-foreground">
               分析邀约到试驾转化率低的原因（当前15%，目标25%）
             </p>
           </div>
@@ -472,13 +464,11 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
         {/* AI Response Area */}
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
+          
           <div className="flex-1 space-y-4">
             {/* Thinking indicator */}
             {isAnalyzing && !dataModulesComplete && (
-              <div className="flex items-center gap-2 text-gray-500">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span className="text-sm">思考中...</span>
               </div>
@@ -486,21 +476,21 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
             {/* Data modules loading */}
             {dataModulesLoading && (
-              <div className="bg-blue-50 rounded-xl p-4 border border-blue-100 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="bg-info-muted rounded-xl p-4 border border-info/20 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="flex items-center gap-2 mb-3">
-                  <Database className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm font-medium text-blue-800">正在调用系统数据模块</span>
+                  <Database className="w-4 h-4 text-info" />
+                  <span className="text-sm font-medium text-info">正在调用系统数据模块</span>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs text-blue-600">
+                  <div className="flex items-center gap-2 text-xs text-info">
                     <Loader2 className="w-3 h-3 animate-spin" />
                     <span>商机状态数据</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-blue-600">
+                  <div className="flex items-center gap-2 text-xs text-info">
                     <Loader2 className="w-3 h-3 animate-spin" />
                     <span>存量商机数据</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-blue-600">
+                  <div className="flex items-center gap-2 text-xs text-info">
                     <Loader2 className="w-3 h-3 animate-spin" />
                     <span>通话数据</span>
                   </div>
@@ -510,10 +500,10 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
             {/* Data modules complete */}
             {dataModulesComplete && (
-              <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="bg-success-muted rounded-xl p-3 border border-success/20 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  <span className="text-sm text-emerald-700">数据模块调用完成</span>
+                  <CheckCircle2 className="w-4 h-4 text-success" />
+                  <span className="text-sm text-success">数据模块调用完成</span>
                 </div>
               </div>
             )}
@@ -528,13 +518,13 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     {step.isActive ? (
-                      <Loader2 className="w-4 h-4 text-blue-500 animate-spin shrink-0" />
+                      <Loader2 className="w-4 h-4 text-info animate-spin shrink-0" />
                     ) : step.isComplete ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-success shrink-0" />
                     ) : (
-                      <div className="w-4 h-4 rounded-full bg-gray-200 shrink-0" />
+                      <div className="w-4 h-4 rounded-full bg-muted shrink-0" />
                     )}
-                    <span className={`text-sm ${step.isActive ? 'text-blue-600' : step.isComplete ? 'text-gray-700' : 'text-gray-400'}`}>
+                    <span className={`text-sm ${step.isActive ? 'text-info' : step.isComplete ? 'text-foreground' : 'text-muted-foreground'}`}>
                       {step.text}
                     </span>
                   </div>
@@ -544,12 +534,12 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
             {/* Completion indicator */}
             {analysisComplete && (
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="bg-gradient-to-br from-success-muted to-success-muted/50 rounded-xl p-4 border border-success/30 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                  <span className="text-sm font-medium text-emerald-800">已完成</span>
+                  <CheckCircle2 className="w-5 h-5 text-success" />
+                  <span className="text-sm font-medium text-success">已完成</span>
                 </div>
-                <p className="text-xs text-gray-600 mt-2 ml-7">分析报告已生成，请在右侧查看完整内容</p>
+                <p className="text-xs text-muted-foreground mt-2 ml-7">分析报告已生成，请在右侧查看完整内容</p>
               </div>
             )}
           </div>
@@ -610,75 +600,75 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
       
       switch (line.type) {
         case "title":
-          return <h1 key={index} className="text-xl font-bold text-gray-800 mb-6 animate-in fade-in duration-200">{line.content}</h1>;
+          return <h1 key={index} className="text-xl font-bold text-foreground mb-6 animate-in fade-in duration-200">{line.content}</h1>;
         case "h2":
           return (
-            <h2 key={index} className="text-base font-semibold text-gray-800 mt-6 mb-3 flex items-center gap-2 animate-in fade-in duration-200">
+            <h2 key={index} className="text-base font-semibold text-foreground mt-6 mb-3 flex items-center gap-2 animate-in fade-in duration-200">
               <span className={`w-1.5 h-1.5 bg-${line.color}-500 rounded-full`} />
               {line.content}
             </h2>
           );
         case "h3":
-          return <p key={index} className="font-medium text-gray-700 mt-3 mb-1 ml-3.5 animate-in fade-in duration-200">{line.content}</p>;
+          return <p key={index} className="font-medium text-foreground mt-3 mb-1 ml-3.5 animate-in fade-in duration-200">{line.content}</p>;
         case "h3-red":
-          return <p key={index} className="font-medium text-red-700 mt-3 mb-1 ml-3.5 animate-in fade-in duration-200">{line.content}</p>;
+          return <p key={index} className="font-medium text-destructive mt-3 mb-1 ml-3.5 animate-in fade-in duration-200">{line.content}</p>;
         case "h3-orange":
-          return <p key={index} className="font-medium text-orange-700 mt-3 mb-1 ml-3.5 animate-in fade-in duration-200">{line.content}</p>;
+          return <p key={index} className="font-medium text-warning-foreground mt-3 mb-1 ml-3.5 animate-in fade-in duration-200">{line.content}</p>;
         case "p":
-          return <p key={index} className="text-sm text-gray-700 ml-3.5 mb-2 animate-in fade-in duration-200">{line.content}</p>;
+          return <p key={index} className="text-sm text-foreground ml-3.5 mb-2 animate-in fade-in duration-200">{line.content}</p>;
         case "li":
           return (
-            <div key={index} className="flex items-start gap-2 text-sm text-gray-600 ml-7 mb-1 animate-in fade-in duration-200">
-              <span className="w-1 h-1 bg-gray-400 rounded-full mt-2 shrink-0" />
+            <div key={index} className="flex items-start gap-2 text-sm text-muted-foreground ml-7 mb-1 animate-in fade-in duration-200">
+              <span className="w-1 h-1 bg-muted-foreground rounded-full mt-2 shrink-0" />
               {line.content}
             </div>
           );
         case "li-red":
           return (
             <div key={index} className="flex items-start gap-2 text-sm ml-7 mb-1 animate-in fade-in duration-200">
-              <span className="w-1 h-1 bg-red-500 rounded-full mt-2 shrink-0" />
-              <span><span className="text-red-600 font-medium">{line.content.split("：")[0]}：</span><span className="text-gray-600">{line.content.split("：")[1]}</span></span>
+              <span className="w-1 h-1 bg-destructive rounded-full mt-2 shrink-0" />
+              <span><span className="text-destructive font-medium">{line.content.split("：")[0]}：</span><span className="text-muted-foreground">{line.content.split("：")[1]}</span></span>
             </div>
           );
         case "li-orange":
           return (
             <div key={index} className="flex items-start gap-2 text-sm ml-7 mb-1 animate-in fade-in duration-200">
-              <span className="w-1 h-1 bg-orange-500 rounded-full mt-2 shrink-0" />
-              <span><span className="text-orange-600 font-medium">{line.content.split("：")[0]}：</span><span className="text-gray-600">{line.content.split("：")[1]}</span></span>
+              <span className="w-1 h-1 bg-warning rounded-full mt-2 shrink-0" />
+              <span><span className="text-warning-foreground font-medium">{line.content.split("：")[0]}：</span><span className="text-muted-foreground">{line.content.split("：")[1]}</span></span>
             </div>
           );
         case "li-num":
           return (
-            <div key={index} className="text-sm text-gray-600 ml-7 mb-1 animate-in fade-in duration-200">
+            <div key={index} className="text-sm text-muted-foreground ml-7 mb-1 animate-in fade-in duration-200">
               {line.content}
             </div>
           );
         case "conclusion":
           return (
-            <div key={index} className={`bg-${line.color}-50 rounded-lg p-3 border border-${line.color}-100 ml-3.5 mt-2 mb-2 text-sm text-gray-700 animate-in fade-in duration-200`}>
+            <div key={index} className={`bg-${line.color}-50 rounded-lg p-3 border border-${line.color}-100 ml-3.5 mt-2 mb-2 text-sm text-foreground animate-in fade-in duration-200`}>
               <strong>{line.content.split("：")[0]}：</strong>{line.content.split("：")[1]}
             </div>
           );
         case "table":
           return (
             <div key={index} className="overflow-x-auto mt-3 ml-3.5 animate-in fade-in duration-200">
-              <table className="w-full text-xs border border-gray-200 rounded-lg overflow-hidden">
-                <thead className="bg-gray-50">
+              <table className="w-full text-xs border border-border rounded-lg overflow-hidden">
+                <thead className="bg-muted">
                   <tr>
-                    <th className="px-3 py-2 text-left text-gray-600 font-medium">姓名</th>
-                    <th className="px-3 py-2 text-left text-gray-600 font-medium">通次</th>
-                    <th className="px-3 py-2 text-left text-gray-600 font-medium">通时</th>
-                    <th className="px-3 py-2 text-left text-gray-600 font-medium">差距</th>
-                    <th className="px-3 py-2 text-left text-gray-600 font-medium">状态</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground font-medium">姓名</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground font-medium">通次</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground font-medium">通时</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground font-medium">差距</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground font-medium">状态</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-border">
                   {salesData.map((row, i) => (
-                    <tr key={i} className="bg-white">
-                      <td className="px-3 py-2 text-gray-800">{row.name}</td>
-                      <td className="px-3 py-2 text-gray-600">{row.calls}</td>
-                      <td className="px-3 py-2 text-gray-600">{row.duration}</td>
-                      <td className="px-3 py-2 text-gray-600">{row.gap}</td>
+                    <tr key={i} className="bg-card">
+                      <td className="px-3 py-2 text-foreground">{row.name}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{row.calls}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{row.duration}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{row.gap}</td>
                       <td className="px-3 py-2">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] ${getStatusColor(row.status)}`}>
                           {row.status}
@@ -692,14 +682,14 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           );
         case "advice-title":
           return (
-            <div key={index} className="bg-emerald-50 rounded-lg p-4 border border-emerald-100 ml-3.5 mt-3 animate-in fade-in duration-200">
-              <p className="font-medium text-emerald-800 mb-2">{line.content}</p>
+            <div key={index} className="bg-success-muted rounded-lg p-4 border border-success/20 ml-3.5 mt-3 animate-in fade-in duration-200">
+              <p className="font-medium text-success mb-2">{line.content}</p>
             </div>
           );
         case "advice":
           return (
-            <div key={index} className="flex items-start gap-2 text-sm text-gray-700 ml-7 mb-2 animate-in fade-in duration-200">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1.5 shrink-0" />
+            <div key={index} className="flex items-start gap-2 text-sm text-foreground ml-7 mb-2 animate-in fade-in duration-200">
+              <span className="w-1.5 h-1.5 bg-success rounded-full mt-1.5 shrink-0" />
               {line.content}
             </div>
           );
@@ -709,7 +699,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
               <button
                 type="button"
                 onClick={handleDownloadPDF}
-                className="flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-500 text-white rounded-lg font-medium active:bg-emerald-600 transition-colors text-sm"
+                className="flex items-center justify-center gap-2 px-6 py-2.5 bg-success text-success-foreground rounded-lg font-medium active:bg-success/90 transition-colors text-sm"
               >
                 <Download className="w-4 h-4" />
                 {line.content}
@@ -722,34 +712,34 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     };
 
     return (
-      <div className="flex flex-col h-full bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="flex flex-col h-full bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         {/* Document header toolbar */}
-        <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+        <div className="px-4 py-2 border-b border-border flex items-center justify-between bg-muted">
           <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">邀约到试驾转化率分析报告</span>
+            <FileText className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">邀约到试驾转化率分析报告</span>
           </div>
           <div className="flex items-center gap-1">
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-accent bg-transparent">
               <Bold className="w-3.5 h-3.5" />
             </button>
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-accent bg-transparent">
               <Italic className="w-3.5 h-3.5" />
             </button>
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-accent bg-transparent">
               <List className="w-3.5 h-3.5" />
             </button>
-            <div className="w-px h-4 bg-gray-300 mx-1" />
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
+            <div className="w-px h-4 bg-border mx-1" />
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-accent bg-transparent">
               <Printer className="w-3.5 h-3.5" />
             </button>
-            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent">
+            <button type="button" className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-accent bg-transparent">
               <Share2 className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 ml-2 bg-transparent"
+              className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-accent ml-2 bg-transparent"
             >
               <X className="w-4 h-4" />
             </button>
@@ -762,7 +752,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           
           {/* Typing cursor indicator */}
           {visibleLines > 0 && visibleLines < reportLines.length && (
-            <span className="inline-block w-2 h-4 bg-blue-500 animate-pulse ml-1" />
+            <span className="inline-block w-2 h-4 bg-info animate-pulse ml-1" />
           )}
         </div>
       </div>
@@ -771,15 +761,13 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
   // Render marketing/acquisition helper welcome
   const renderMarketingWelcome = () => (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto bg-background">
       <div className="max-w-xl mx-auto px-6 py-8">
         {/* AI Welcome Message */}
         <div className="flex items-start gap-3 mb-6">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <div className="flex-1 text-sm text-gray-700 leading-relaxed">
-            <p>您希望我创作哪种类型的营销素材呢</p>
+          
+          <div className="flex-1 text-sm text-foreground leading-relaxed">
+            <p>您希望我创作哪种类型的营销素材呢，我可以帮您创作图片或短视频素材。</p>
           </div>
         </div>
 
@@ -788,18 +776,18 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           <button
             type="button"
             onClick={() => handleSelectMaterialType("image")}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl active:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-card border border-border rounded-xl active:bg-accent transition-colors"
           >
-            <ImageIcon className="w-4 h-4 text-amber-500" />
-            <span className="text-sm text-gray-700">图片素材</span>
+            <ImageIcon className="w-4 h-4 text-warning" />
+            <span className="text-sm text-foreground">图片素材</span>
           </button>
           <button
             type="button"
             onClick={() => handleSelectMaterialType("video")}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl active:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-card border border-border rounded-xl active:bg-accent transition-colors"
           >
-            <Video className="w-4 h-4 text-blue-500" />
-            <span className="text-sm text-gray-700">短视频素材</span>
+            <Video className="w-4 h-4 text-info" />
+            <span className="text-sm text-foreground">短视频素材</span>
           </button>
         </div>
       </div>
@@ -812,8 +800,8 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
       <div className={`${showMarketingRightPanel ? 'px-6' : 'max-w-xl mx-auto px-6'} py-6 space-y-4`}>
         {/* Step 1: Type selection result */}
         <div className="flex justify-end mb-4">
-          <div className="bg-gray-100 rounded-2xl px-4 py-2.5">
-            <p className="text-sm text-gray-700">
+          <div className="bg-muted rounded-2xl px-4 py-2.5">
+            <p className="text-sm text-foreground">
               {selectedMaterialType === "video" ? "短视频素材" : "图片素材"}
             </p>
           </div>
@@ -822,30 +810,30 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 2: Direction question */}
         {marketingStep !== "selectType" && (
           <div className="flex items-start gap-3">
-            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
+            
             <div className="flex-1 space-y-3">
-              <p className="text-sm text-gray-700">那么下一步创作哪个方向的营销内容呢</p>
+              <p className="text-sm text-foreground">那么下一步创作哪个方向的营销内容呢？</p>
               
               {marketingStep === "selectDirection" && (
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => handleSelectDirection("种草视频")}
-                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 active:bg-gray-50 transition-colors"
+                    className="px-4 py-2 bg-card border border-border rounded-xl text-sm text-foreground active:bg-accent transition-colors"
                   >
                     种草视频
                   </button>
                   <button
                     type="button"
                     onClick={() => handleSelectDirection("新车型亮点宣传")}
-                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 active:bg-gray-50 transition-colors"
+                    className="px-4 py-2 bg-card border border-border rounded-xl text-sm text-foreground active:bg-accent transition-colors"
                   >
                     新车型亮点宣传
                   </button>
                   <button
                     type="button"
                     onClick={() => handleSelectDirection("促销政策")}
-                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 active:bg-gray-50 transition-colors"
+                    className="px-4 py-2 bg-card border border-border rounded-xl text-sm text-foreground active:bg-accent transition-colors"
                   >
                     促销政策
                   </button>
@@ -858,8 +846,8 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 3: User selected direction */}
         {selectedDirection && (
           <div className="flex justify-end">
-            <div className="bg-gray-100 rounded-2xl px-4 py-2.5">
-              <p className="text-sm text-gray-700">{selectedDirection}</p>
+            <div className="bg-muted rounded-2xl px-4 py-2.5">
+              <p className="text-sm text-foreground">{selectedDirection}</p>
             </div>
           </div>
         )}
@@ -868,7 +856,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {marketingStep === "showLibrary" && !marketingLibraryLoaded && (
           <div className="flex items-start gap-3">
             <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
-            <div className="flex items-center gap-2 text-gray-500">
+            <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span className="text-sm">检索内容库素材内容...</span>
             </div>
@@ -878,14 +866,14 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 5: Ask recreate */}
         {(marketingStep === "askRecreate" || marketingStep === "generating" || marketingStep === "complete") && (
           <div className="flex items-start gap-3">
-            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
+            
             <div className="flex-1 space-y-3">
-              <p className="text-sm text-gray-700">下一步是否为您重新创作？</p>
+              <p className="text-sm text-foreground">下一步是否为您重新创作？</p>
               {marketingStep === "askRecreate" && (
                 <button
                   type="button"
                   onClick={handleRecreateConfirm}
-                  className="px-4 py-2 bg-emerald-500 text-white rounded-xl text-sm font-medium active:bg-emerald-600 transition-colors"
+                  className="px-4 py-2 bg-success text-success-foreground rounded-xl text-sm font-medium active:bg-success/90 transition-colors"
                 >
                   好的
                 </button>
@@ -897,8 +885,8 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 6: User confirmed */}
         {(marketingStep === "generating" || marketingStep === "complete") && (
           <div className="flex justify-end">
-            <div className="bg-gray-100 rounded-2xl px-4 py-2.5">
-              <p className="text-sm text-gray-700">好的</p>
+            <div className="bg-muted rounded-2xl px-4 py-2.5">
+              <p className="text-sm text-foreground">好的</p>
             </div>
           </div>
         )}
@@ -906,11 +894,11 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 7: Generating - LLM style text generation */}
         {marketingStep === "generating" && (
           <div className="flex items-start gap-3">
-            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
+            
             <div className="flex-1">
-              <div className="text-sm text-gray-700 leading-relaxed">
+              <div className="text-sm text-foreground leading-relaxed">
                 <p className="mb-2">正在为您生成视频内容...</p>
-                <div className="space-y-1.5 text-gray-500">
+                <div className="space-y-1.5 text-muted-foreground">
                   {videoGenerationProgress >= 10 && (
                     <p className="animate-in fade-in duration-300">- 分析种草视频风格特征</p>
                   )}
@@ -928,7 +916,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                   )}
                 </div>
                 {videoGenerationProgress < 100 && (
-                  <span className="inline-block w-2 h-4 bg-blue-500 animate-pulse ml-1 mt-2" />
+                  <span className="inline-block w-2 h-4 bg-info animate-pulse ml-1 mt-2" />
                 )}
               </div>
             </div>
@@ -938,14 +926,14 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 8: Complete */}
         {marketingStep === "complete" && (
           <div className="flex items-start gap-3">
-            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
+            
             <div className="flex-1 space-y-3">
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
+              <div className="bg-gradient-to-br from-success-muted to-success-muted/50 rounded-xl p-4 border border-success/30">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                  <span className="text-sm font-medium text-emerald-800">视频生成完成</span>
+                  <CheckCircle2 className="w-5 h-5 text-success" />
+                  <span className="text-sm font-medium text-success">视频生成完成</span>
                 </div>
-                <p className="text-xs text-gray-600 mt-2 ml-7">请在右侧查看生成的视频内容</p>
+                <p className="text-xs text-muted-foreground mt-2 ml-7">请在右侧查看生成的视频内容</p>
               </div>
             </div>
           </div>
@@ -957,19 +945,19 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
   // Render marketing right panel (library videos / generated video)
   const renderMarketingRightPanel = () => {
     return (
-      <div className="flex flex-col h-full bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="flex flex-col h-full bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+        <div className="px-4 py-2 border-b border-border flex items-center justify-between bg-muted">
           <div className="flex items-center gap-2">
-            <Video className="w-4 h-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">
+            <Video className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">
               {videoGenerationComplete ? "生成结果" : "内容库素材"}
             </span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent"
+            className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-accent bg-transparent"
           >
             <X className="w-4 h-4" />
           </button>
@@ -982,7 +970,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
               {/* Library loading */}
               {!marketingLibraryLoaded && (
                 <div className="flex items-center justify-center h-40">
-                  <div className="flex items-center gap-2 text-gray-500">
+                  <div className="flex items-center gap-2 text-muted-foreground">
                     <Loader2 className="w-5 h-5 animate-spin" />
                     <span className="text-sm">检索内容库素材内容...</span>
                   </div>
@@ -992,7 +980,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
               {/* Library videos */}
               {marketingLibraryLoaded && (
                 <div className="space-y-4 animate-in fade-in duration-500">
-                  <p className="text-sm text-gray-700">为您找到以下热门素材：</p>
+                  <p className="text-sm text-foreground">为您找到以下热门素材：</p>
                   
                   {/* Video thumbnails */}
                   <div className="grid grid-cols-3 gap-3">
@@ -1001,7 +989,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                       { title: "理想i8超长3米侧气帘，给你满舱安全底气", duration: "00:01:52", views: "12.3万", image: "/images/44.jpg" },
                       { title: "牙克石-30°C实测,这台车空调不止是快", duration: "00:03:05", views: "25.1万", image: "/images/55.jpg" },
                     ].map((video, index) => (
-                      <div key={index} className="bg-gray-100 rounded-xl overflow-hidden">
+                      <div key={index} className="bg-muted rounded-xl overflow-hidden">
                         <div className="relative aspect-[9/16]">
                           <img 
                             src={video.image || "/placeholder.svg"} 
@@ -1009,8 +997,8 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                            <div className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
-                              <Play className="w-5 h-5 text-gray-700 ml-0.5" />
+                            <div className="w-10 h-10 bg-card/90 rounded-full flex items-center justify-center shadow-lg">
+                              <Play className="w-5 h-5 text-foreground ml-0.5" />
                             </div>
                           </div>
                           <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
@@ -1018,8 +1006,8 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                           </div>
                         </div>
                         <div className="p-2">
-                          <p className="text-xs font-medium text-gray-700 line-clamp-2 leading-tight">{video.title}</p>
-                          <p className="text-[10px] text-gray-500 mt-1">{video.views} 播放</p>
+                          <p className="text-xs font-medium text-foreground line-clamp-2 leading-tight">{video.title}</p>
+                          <p className="text-[10px] text-muted-foreground mt-1">{video.views} 播放</p>
                         </div>
                       </div>
                     ))}
@@ -1030,10 +1018,10 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           ) : (
             /* Generated video result */
             <div className="space-y-4 animate-in fade-in duration-500">
-              <p className="text-sm text-gray-700">视频已生成完成：</p>
+              <p className="text-sm text-foreground">视频已生成完成：</p>
               
               {/* Final video preview - using 66.jpg */}
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
                 <div className="relative">
                   <img 
                     src="/images/66.jpg" 
@@ -1041,35 +1029,35 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                     className="w-full aspect-video object-cover"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                    <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center shadow-xl">
-                      <Play className="w-8 h-8 text-gray-800 ml-1" />
+                    <div className="w-16 h-16 bg-card/95 rounded-full flex items-center justify-center shadow-xl">
+                      <Play className="w-8 h-8 text-foreground ml-1" />
                     </div>
                   </div>
                   <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded">
                     00:03:50
                   </div>
                   {/* New badge */}
-                  <div className="absolute top-3 left-3 bg-emerald-500 text-white text-[10px] font-medium px-2 py-1 rounded">
+                  <div className="absolute top-3 left-3 bg-success text-success-foreground text-[10px] font-medium px-2 py-1 rounded">
                     AI 生成
                   </div>
                 </div>
                 <div className="p-4">
-                  <h4 className="font-medium text-gray-800 mb-1">全网最详细理想i6评测</h4>
-                  <p className="text-sm text-gray-500">种草视频 · 刚刚生成</p>
+                  <h4 className="font-medium text-foreground mb-1">全网最详细理想i6评测</h4>
+                  <p className="text-sm text-muted-foreground">种草视频 · 刚刚生成</p>
                   
                   {/* Action buttons */}
                   <div className="flex gap-2 mt-4">
                     <button
                       type="button"
                       onClick={handleDownloadVideo}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 text-white rounded-lg text-sm font-medium active:bg-emerald-600 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-success text-success-foreground rounded-lg text-sm font-medium active:bg-success/90 transition-colors"
                     >
                       <Download className="w-4 h-4" />
                       下载视频
                     </button>
                     <button
                       type="button"
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium active:bg-gray-50 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-card border border-border text-foreground rounded-lg text-sm font-medium active:bg-accent transition-colors"
                     >
                       <Share2 className="w-4 h-4" />
                       分享
@@ -1089,10 +1077,10 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     <div className="flex-1 overflow-y-auto">
       <div className="max-w-xl mx-auto px-6 py-8">
         <div className="flex items-start gap-3 mb-6">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-white" />
+          <div className="w-8 h-8 bg-gradient-to-br from-info to-info/80 rounded-lg flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4 text-info-foreground" />
           </div>
-          <div className="flex-1 text-sm text-gray-700 leading-relaxed">
+          <div className="flex-1 text-sm text-foreground leading-relaxed">
             <p className="mb-4">您好，店长！我是 SalesAgent，您的AI销售助手。</p>
             <p>请选择您想要使用的功能，或直接输入问题开始对话。</p>
           </div>
@@ -1103,32 +1091,32 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           <button
             type="button"
             onClick={() => setMode("analysis")}
-            className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl active:bg-emerald-100 transition-colors text-left"
+            className="flex items-center gap-3 p-4 bg-success-muted border border-success/30 rounded-xl active:bg-success-muted/80 transition-colors text-left"
           >
-            <BarChart3 className="w-5 h-5 text-emerald-600" />
-            <span className="text-sm font-medium text-gray-700">业务诊断</span>
+            <BarChart3 className="w-5 h-5 text-success" />
+            <span className="text-sm font-medium text-foreground">业务诊断</span>
           </button>
           <button
             type="button"
-            className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl active:bg-blue-100 transition-colors text-left"
+            className="flex items-center gap-3 p-4 bg-info-muted border border-info/30 rounded-xl active:bg-info-muted/80 transition-colors text-left"
           >
-            <User className="w-5 h-5 text-blue-600" />
-            <span className="text-sm font-medium text-gray-700">客户顾问</span>
+            <User className="w-5 h-5 text-info" />
+            <span className="text-sm font-medium text-foreground">客户顾问</span>
           </button>
           <button
             type="button"
             onClick={() => setMode("acquisitionHelper")}
-            className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl active:bg-amber-100 transition-colors text-left"
+            className="flex items-center gap-3 p-4 bg-warning-muted border border-warning/30 rounded-xl active:bg-warning-muted/80 transition-colors text-left"
           >
-            <Users className="w-5 h-5 text-amber-600" />
-            <span className="text-sm font-medium text-gray-700">获客助手</span>
+            <Users className="w-5 h-5 text-warning-foreground" />
+            <span className="text-sm font-medium text-foreground">获客助手</span>
           </button>
           <button
             type="button"
-            className="flex items-center gap-3 p-4 bg-rose-50 border border-rose-200 rounded-xl active:bg-rose-100 transition-colors text-left"
+            className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/30 rounded-xl active:bg-destructive/20 transition-colors text-left"
           >
-            <Target className="w-5 h-5 text-rose-600" />
-            <span className="text-sm font-medium text-gray-700">帮我干活</span>
+            <Target className="w-5 h-5 text-destructive" />
+            <span className="text-sm font-medium text-foreground">帮我干活</span>
           </button>
         </div>
       </div>
@@ -1139,18 +1127,18 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
       {/* Fixed size container: 1194 x 834 */}
       <div 
-        className="bg-white rounded-2xl shadow-2xl flex overflow-hidden animate-in fade-in zoom-in-95 duration-300"
+        className="bg-card rounded-2xl shadow-2xl flex overflow-hidden animate-in fade-in zoom-in-95 duration-300"
         style={{ width: '1194px', height: '834px' }}
       >
         {/* Left Navigation Sidebar - White background matching content */}
-        <div className="w-14 bg-white border-r border-gray-100 flex flex-col items-center py-4 gap-1 shrink-0">
+        <div className="w-14 bg-card border-r border-border flex flex-col items-center py-4 gap-1 shrink-0">
           {/* Avatar */}
           <button
             type="button"
             className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-semibold">店</span>
+            <div className="w-8 h-8 bg-gradient-to-br from-success to-success/80 rounded-full flex items-center justify-center">
+              <span className="text-success-foreground text-xs font-semibold">店</span>
             </div>
           </button>
           
@@ -1158,7 +1146,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           <button
             type="button"
             onClick={onClose}
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
             title="工作台"
           >
             <Home className="w-5 h-5" strokeWidth={1.5} />
@@ -1169,7 +1157,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             type="button"
             onClick={() => setMode("analysis")}
             className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-              mode === "analysis" ? "bg-emerald-50 text-emerald-600" : "text-gray-400 active:bg-gray-100"
+              mode === "analysis" ? "bg-success-muted text-success" : "text-muted-foreground active:bg-accent"
             }`}
             title="诊断看板"
           >
@@ -1179,7 +1167,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           {/* Task List */}
           <button
             type="button"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
             title="任务列表"
           >
             <ListTodo className="w-5 h-5" strokeWidth={1.5} />
@@ -1188,7 +1176,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           {/* Customer List */}
           <button
             type="button"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
             title="客户列表"
           >
             <Users className="w-5 h-5" strokeWidth={1.5} />
@@ -1197,7 +1185,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           {/* Content Library */}
           <button
             type="button"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
             title="内容库"
           >
             <FolderOpen className="w-5 h-5" strokeWidth={1.5} />
@@ -1206,7 +1194,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           {/* Toolbox */}
           <button
             type="button"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
             title="工具箱"
           >
             <Wrench className="w-5 h-5" strokeWidth={1.5} />
@@ -1214,30 +1202,30 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex bg-white relative">
+        <div className="flex-1 flex bg-card relative">
           {/* Close button - top right corner */}
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors bg-transparent"
+            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-colors bg-transparent"
             title="关闭"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Chat Panel - Dynamic width */}
-          <div className={`flex flex-col transition-all duration-500 ease-in-out ${(showRightPanel || showMarketingRightPanel) ? 'w-[420px] border-r border-gray-200' : 'flex-1'}`}>
+          <div className={`flex flex-col transition-all duration-500 ease-in-out ${(showRightPanel || showMarketingRightPanel) ? 'w-[420px] border-r border-border' : 'flex-1'}`}>
             {/* Header */}
-            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between shrink-0">
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-6 h-6 object-contain" />
-                <span className="text-sm font-semibold text-gray-800">SalesAgent</span>
+                <span className="text-sm font-semibold text-foreground">SalesAgent</span>
               </div>
               {!showWelcome && (
                 <button
                   type="button"
                   onClick={resetToDefault}
-                  className="text-xs text-gray-400 active:text-gray-600"
+                  className="text-xs text-muted-foreground active:text-foreground"
                 >
                   开启新话题
                 </button>
@@ -1259,14 +1247,14 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
           {/* Right Panel - Slide in when analysis complete */}
           {showRightPanel && (
-            <div className="flex-1 p-4 bg-gray-50 animate-in slide-in-from-right duration-500">
+            <div className="flex-1 p-4 bg-muted animate-in slide-in-from-right duration-500">
               {renderAnalysisReport()}
             </div>
           )}
 
           {/* Right Panel - Marketing content */}
           {showMarketingRightPanel && (
-            <div className="flex-1 p-4 bg-gray-50 animate-in slide-in-from-right duration-500">
+            <div className="flex-1 p-4 bg-muted animate-in slide-in-from-right duration-500">
               {renderMarketingRightPanel()}
             </div>
           )}
@@ -1276,8 +1264,8 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
       {/* Download success alert toast */}
       {downloadAlert.show && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="flex items-center gap-2 px-4 py-3 bg-gray-900 text-white rounded-lg shadow-lg">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+          <div className="flex items-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-lg shadow-lg">
+            <CheckCircle2 className="w-5 h-5 text-success" />
             <span className="text-sm">{downloadAlert.message}</span>
           </div>
         </div>

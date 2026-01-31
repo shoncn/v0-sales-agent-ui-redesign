@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, Sparkles, Plus, Mic, ThumbsUp, ThumbsDown, Share2, RefreshCw, X, Upload, ImageIcon } from "lucide-react";
+import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, AnnoyedIcon,Sparkles, MicIcon, Mic, ThumbsUp, ThumbsDown, Share2, RefreshCw, X, Upload, ImageIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis" | "marketingMaterial";
@@ -400,7 +400,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
           onClick={enterMarketingMaterial}
           className="flex-1 px-4 py-3 bg-blue-500 active:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors"
         >
-          生成营销素材
+          生成素材
         </button>
         <button type="button" className="px-4 py-3 bg-gray-100 active:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors border border-gray-200">
           编辑
@@ -761,7 +761,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     <div className="flex flex-col items-center justify-center h-full px-6 py-10">
       {/* Logo/Avatar */}
       <div className="w-14 h-14 mb-5 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg">
-        <Sparkles className="w-7 h-7 text-white" />
+        <AnnoyedIcon className="w-7 h-7 text-white" />
       </div>
 
       <h2 className="text-lg font-semibold text-gray-800 mb-2">Sales Agent</h2>
@@ -1024,14 +1024,14 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
                 className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
                 title="新对话"
               >
-                <Plus className="w-4 h-4" />
+                <MicIcon className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
                 title="语音输入"
               >
-                <Mic className="w-4 h-4" />
+                
               </button>
             </div>
             
