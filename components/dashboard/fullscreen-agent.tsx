@@ -12,32 +12,22 @@ import {
   User,
   Target,
   Users,
-  ListTodo,
   FileText,
-  FolderOpen,
-  Wrench,
-  Home,
   Database,
   Mic,
   Plus,
   ChevronRight,
-  ChevronDown,
   AlertTriangle,
   Download,
   CheckCircle2,
   Bold,
   Italic,
   List,
-  ListOrdered,
   Share2,
   Printer,
-  Search,
-  MessageSquare,
-  Settings,
   Play,
   ImageIcon,
   Video,
-  Clock,
 } from "lucide-react";
 
 type AgentMode = "default" | "analysis" | "marketingMaterial" | "customerAdvisor" | "acquisitionHelper" | "taskHelper";
@@ -1136,141 +1126,47 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
   );
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-      {/* Fixed size container: 1194 x 834 */}
-      <div 
-        className="bg-card rounded-2xl shadow-2xl flex overflow-hidden animate-in fade-in zoom-in-95 duration-300"
-        style={{ width: '1194px', height: '834px' }}
-      >
-        {/* Left Navigation Sidebar - White background matching content */}
-        <div className="w-14 bg-card border-r border-border flex flex-col items-center py-4 gap-1 shrink-0">
-          {/* Avatar */}
-          <button
-            type="button"
-            className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
-          >
-            <div className="w-8 h-8 bg-gradient-to-br from-success to-success/80 rounded-full flex items-center justify-center">
-              <span className="text-success-foreground text-xs font-semibold">店</span>
-            </div>
-          </button>
-          
-          {/* Workbench - returns to homepage */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
-            title="工作台"
-          >
-            <Home className="w-5 h-5" strokeWidth={1.5} />
-          </button>
-          
-          {/* Diagnosis */}
-          <button
-            type="button"
-            onClick={() => setMode("analysis")}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-              mode === "analysis" ? "bg-success-muted text-success" : "text-muted-foreground active:bg-accent"
-            }`}
-            title="诊断看板"
-          >
-            <BarChart3 className="w-5 h-5" strokeWidth={1.5} />
-          </button>
-          
-          {/* Task List */}
-          <button
-            type="button"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
-            title="任务列表"
-          >
-            <ListTodo className="w-5 h-5" strokeWidth={1.5} />
-          </button>
-          
-          {/* Customer List */}
-          <button
-            type="button"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
-            title="客户列表"
-          >
-            <Users className="w-5 h-5" strokeWidth={1.5} />
-          </button>
-          
-          {/* Content Library */}
-          <button
-            type="button"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
-            title="内容库"
-          >
-            <FolderOpen className="w-5 h-5" strokeWidth={1.5} />
-          </button>
-          
-          {/* Toolbox */}
-          <button
-            type="button"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground active:bg-accent transition-colors"
-            title="工具箱"
-          >
-            <Wrench className="w-5 h-5" strokeWidth={1.5} />
-          </button>
-        </div>
+    <div className="fixed inset-x-0 top-14 bottom-0 bg-card z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {/* Main Content Area - Full width below top header */}
+      <div className="h-full flex bg-card relative">
+        {/* Close button - top right corner */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-3 right-3 z-10 w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-colors bg-transparent"
+          title="关闭"
+        >
+          <X className="w-5 h-5" />
+        </button>
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex bg-card relative">
-          {/* Close button - top right corner */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-colors bg-transparent"
-            title="关闭"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        {/* Chat Panel - Dynamic width */}
+        <div className={`flex flex-col transition-all duration-500 ease-in-out ${(showRightPanel || showMarketingRightPanel) ? 'w-[420px] border-r border-border' : 'flex-1'}`}>
+          {/* Content */}
+          {mode === "default" && showWelcome && renderDefaultWelcome()}
+          {mode === "analysis" && showWelcome && renderAnalysisWelcome()}
+          {mode === "analysis" && !showWelcome && renderAnalysisThinking()}
+          {mode === "acquisitionHelper" && showWelcome && renderMarketingWelcome()}
+          {mode === "acquisitionHelper" && !showWelcome && renderMarketingFlow()}
 
-          {/* Chat Panel - Dynamic width */}
-          <div className={`flex flex-col transition-all duration-500 ease-in-out ${(showRightPanel || showMarketingRightPanel) ? 'w-[420px] border-r border-border' : 'flex-1'}`}>
-            {/* Header */}
-            <div className="px-4 py-3 border-b border-border flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-6 h-6 object-contain" />
-                <span className="text-sm font-semibold text-foreground">SalesAgent</span>
-              </div>
-              {!showWelcome && (
-                <button
-                  type="button"
-                  onClick={resetToDefault}
-                  className="text-xs text-muted-foreground active:text-foreground"
-                >
-                  开启新话题
-                </button>
-              )}
-            </div>
-
-            {/* Content */}
-            {mode === "default" && showWelcome && renderDefaultWelcome()}
-            {mode === "analysis" && showWelcome && renderAnalysisWelcome()}
-            {mode === "analysis" && !showWelcome && renderAnalysisThinking()}
-            {mode === "acquisitionHelper" && showWelcome && renderMarketingWelcome()}
-            {mode === "acquisitionHelper" && !showWelcome && renderMarketingFlow()}
-
-            {/* Input Area - Fixed at bottom center */}
-            <div className={`shrink-0 ${(showRightPanel || showMarketingRightPanel) ? '' : 'max-w-xl mx-auto w-full'}`}>
-              {renderInputArea()}
-            </div>
+          {/* Input Area - Fixed at bottom center */}
+          <div className={`shrink-0 ${(showRightPanel || showMarketingRightPanel) ? '' : 'max-w-xl mx-auto w-full'}`}>
+            {renderInputArea()}
           </div>
-
-          {/* Right Panel - Slide in when analysis complete */}
-          {showRightPanel && (
-            <div className="flex-1 p-4 bg-muted animate-in slide-in-from-right duration-500">
-              {renderAnalysisReport()}
-            </div>
-          )}
-
-          {/* Right Panel - Marketing content */}
-          {showMarketingRightPanel && (
-            <div className="flex-1 p-4 bg-muted animate-in slide-in-from-right duration-500">
-              {renderMarketingRightPanel()}
-            </div>
-          )}
         </div>
+
+        {/* Right Panel - Slide in when analysis complete */}
+        {showRightPanel && (
+          <div className="flex-1 p-4 bg-muted animate-in slide-in-from-right duration-500">
+            {renderAnalysisReport()}
+          </div>
+        )}
+
+        {/* Right Panel - Marketing content */}
+        {showMarketingRightPanel && (
+          <div className="flex-1 p-4 bg-muted animate-in slide-in-from-right duration-500">
+            {renderMarketingRightPanel()}
+          </div>
+        )}
       </div>
 
       {/* Download success alert toast */}
