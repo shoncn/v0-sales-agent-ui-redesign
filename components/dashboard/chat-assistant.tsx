@@ -44,6 +44,7 @@ interface ChatAssistantProps {
   mode?: AssistantMode;
   customerName?: string;
   onModeChange?: (mode: AssistantMode) => void;
+  onOpenFullscreen?: (mode: string) => void;
 }
 
 const salesData = [
@@ -67,7 +68,7 @@ const analysisSteps: AnalysisStep[] = [
   { id: '7', type: 'report', title: '分析报告已生成', content: `**核心问题汇总：**\n1. 通话质量不达标（权重45%）\n2. 存量商机储备不足（权重30%）\n3. 商机状态更新异常（权重25%）`, isComplete: false },
 ];
 
-export function ChatAssistant({ mode = "default", customerName = "王先生", onModeChange }: ChatAssistantProps) {
+export function ChatAssistant({ mode = "default", customerName = "王先生", onModeChange, onOpenFullscreen }: ChatAssistantProps) {
   const [message, setMessage] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showInitial, setShowInitial] = useState(true);
@@ -772,11 +773,11 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
         AI销售专家，帮您分析业务数据、管理客户、提升销售效率
       </p>
 
-      {/* Quick Action Chips */}
+      {/* Quick Action Chips - triggers fullscreen */}
       <div className="w-full max-w-md grid grid-cols-2 gap-3 mb-6">
         <button
           type="button"
-          onClick={enterBusinessDiagnosis}
+          onClick={() => onOpenFullscreen?.("analysis")}
           className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-emerald-300 active:bg-emerald-50 transition-all text-left"
         >
           <BarChart3 className="w-5 h-5 text-emerald-500 shrink-0" />
@@ -784,6 +785,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
         </button>
         <button
           type="button"
+          onClick={() => onOpenFullscreen?.("customerAdvisor")}
           className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-blue-300 active:bg-blue-50 transition-all text-left"
         >
           <User className="w-5 h-5 text-blue-500 shrink-0" />
@@ -791,6 +793,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
         </button>
         <button
           type="button"
+          onClick={() => onOpenFullscreen?.("acquisitionHelper")}
           className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-amber-300 active:bg-amber-50 transition-all text-left"
         >
           <Users className="w-5 h-5 text-amber-500 shrink-0" />
@@ -798,6 +801,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
         </button>
         <button
           type="button"
+          onClick={() => onOpenFullscreen?.("taskHelper")}
           className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-rose-300 active:bg-rose-50 transition-all text-left"
         >
           <Target className="w-5 h-5 text-rose-500 shrink-0" />

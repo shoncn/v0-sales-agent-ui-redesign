@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TopHeader } from "@/components/dashboard/top-header";
 import { FloatingMenu } from "@/components/dashboard/floating-menu";
 import { ChatAssistant } from "@/components/dashboard/chat-assistant";
+import { FullscreenAgent } from "@/components/dashboard/fullscreen-agent";
 import { WorkbenchContent } from "@/components/dashboard/workbench-content";
 import { DiagnosisContent } from "@/components/dashboard/diagnosis-content";
 import { CustomerDetail } from "@/components/dashboard/customer-detail";
@@ -11,12 +12,18 @@ import { TaskListContent } from "@/components/dashboard/task-list-content";
 
 type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy";
 
+type FullscreenAgentMode = "default" | "analysis" | "marketingMaterial" | "customerAdvisor" | "acquisitionHelper" | "taskHelper";
+
 export function DashboardLayout() {
   const [activeTab, setActiveTab] = useState<string>("workbench");
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [assistantMode, setAssistantMode] = useState<AssistantMode>("default");
   const [selectedCustomerName, setSelectedCustomerName] = useState<string>("王先生");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Fullscreen Agent state
+  const [isFullscreenAgentOpen, setIsFullscreenAgentOpen] = useState(false);
+  const [fullscreenAgentMode, setFullscreenAgentMode] = useState<FullscreenAgentMode>("default");
 
   const handleCustomerClick = (customerId: string) => {
     setSelectedCustomerId(customerId);
@@ -53,6 +60,16 @@ export function DashboardLayout() {
 
   const handleAssistantModeChange = (mode: AssistantMode) => {
     setAssistantMode(mode);
+  };
+
+  const handleOpenFullscreen = (mode: string) => {
+    setFullscreenAgentMode(mode as FullscreenAgentMode);
+    setIsFullscreenAgentOpen(true);
+  };
+
+  const handleCloseFullscreen = () => {
+    setIsFullscreenAgentOpen(false);
+    setFullscreenAgentMode("default");
   };
 
   return (
@@ -101,6 +118,15 @@ export function DashboardLayout() {
         mode={assistantMode}
         customerName={selectedCustomerName}
         onModeChange={handleAssistantModeChange}
+        onOpenFullscreen={handleOpenFullscreen}
+      />
+
+      {/* Fullscreen Agent Modal */}
+      <FullscreenAgent
+        isOpen={isFullscreenAgentOpen}
+        onClose={handleCloseFullscreen}
+        initialMode={fullscreenAgentMode}
+        customerName={selectedCustomerName}
       />
     </div>
   );
