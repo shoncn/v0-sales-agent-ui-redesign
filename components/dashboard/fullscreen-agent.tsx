@@ -761,15 +761,13 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
   // Render marketing/acquisition helper welcome
   const renderMarketingWelcome = () => (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto bg-background">
       <div className="max-w-xl mx-auto px-6 py-8">
         {/* AI Welcome Message */}
         <div className="flex items-start gap-3 mb-6">
-          <div className="w-8 h-8 bg-gradient-to-br from-info to-info/80 rounded-lg flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-info-foreground" />
-          </div>
+          
           <div className="flex-1 text-sm text-foreground leading-relaxed">
-            <p>您希望我创作哪种类型的营销素材呢</p>
+            <p>您希望我创作哪种类型的营销素材呢，我可以帮您创作图片或短视频素材。</p>
           </div>
         </div>
 
