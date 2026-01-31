@@ -497,7 +497,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   );
 
   return (
-    <aside className="w-[320px] bg-white border-l border-gray-200 flex flex-col shrink-0 shadow-xl">
+    <aside className="w-1/2 bg-white flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-teal-50">
         <div className="flex items-center gap-2">

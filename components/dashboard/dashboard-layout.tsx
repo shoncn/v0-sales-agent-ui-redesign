@@ -59,10 +59,10 @@ export function DashboardLayout() {
       {/* Sidebar */}
       <Sidebar activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} onTabChange={handleTabChange} />
 
-      {/* Main Content Area */}
+      {/* Main Content Area - 内容区域和Agent区域平分剩余宽度 */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto min-w-0">
+        {/* Main Content - 占50% */}
+        <main className="w-1/2 overflow-y-auto border-r border-gray-200">
           {activeTab === "workbench" && (
             <WorkbenchContent onCustomerClick={handleCustomerClick} />
           )}
@@ -86,7 +86,7 @@ export function DashboardLayout() {
           )}
         </main>
 
-        {/* Chat Assistant */}
+        {/* Chat Assistant - 占50% */}
         <ChatAssistant 
           mode={assistantMode}
           customerName={selectedCustomerName}
