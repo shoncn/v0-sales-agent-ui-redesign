@@ -52,20 +52,20 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="w-[1194px] h-[834px] mx-auto flex flex-col bg-[#F5F7FA] overflow-hidden relative rounded-lg shadow-xl">
-      {/* Top Header */}
-      <TopHeader onMenuClick={() => setIsMenuOpen(true)} />
+    <div className="w-[1194px] h-[834px] mx-auto flex bg-[#F5F7FA] overflow-hidden relative rounded-lg shadow-xl">
+      {/* Left Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+        {/* Top Header - only spans content area */}
+        <TopHeader onMenuClick={() => setIsMenuOpen(true)} />
 
-      {/* Floating Menu */}
-      <FloatingMenu 
-        activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} 
-        onTabChange={handleTabChange}
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-      />
+        {/* Floating Menu */}
+        <FloatingMenu 
+          activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} 
+          onTabChange={handleTabChange}
+          isOpen={isMenuOpen}
+          onClose={() => setIsMenuOpen(false)}
+        />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden">
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto min-w-0">
           {activeTab === "workbench" && (
@@ -90,14 +90,14 @@ export function DashboardLayout() {
             </div>
           )}
         </main>
-
-        {/* Chat Assistant */}
-        <ChatAssistant 
-          mode={assistantMode}
-          customerName={selectedCustomerName}
-          onModeChange={handleAssistantModeChange}
-        />
       </div>
+
+      {/* Right Agent Area - Independent window */}
+      <ChatAssistant 
+        mode={assistantMode}
+        customerName={selectedCustomerName}
+        onModeChange={handleAssistantModeChange}
+      />
     </div>
   );
 }
