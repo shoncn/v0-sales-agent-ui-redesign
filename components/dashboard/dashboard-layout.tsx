@@ -55,7 +55,7 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="flex h-screen bg-[#F5F7FA]">
+    <div className="flex h-screen bg-[#f8f9fa]">
       {/* Sidebar */}
       <Sidebar activeTab={activeTab === "customer-detail" ? "workbench" : activeTab} onTabChange={handleTabChange} />
 
