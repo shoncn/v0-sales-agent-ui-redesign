@@ -7,7 +7,7 @@ export function ExperienceCard() {
       <div className="bg-white rounded-xl p-4 border border-gray-100">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-2 h-2 bg-blue-500 rounded-full" />
-          <span className="text-sm font-medium text-gray-700">通话数据</span>
+          <span className="text-sm font-medium text-gray-700">昨日通话数据</span>
         </div>
         
         <div className="flex">
@@ -54,7 +54,7 @@ export function ExperienceCard() {
       <div className="bg-white rounded-xl p-4 border border-gray-100">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-2 h-2 bg-orange-500 rounded-full" />
-          <span className="text-sm font-medium text-gray-700">试驾数据</span>
+          <span className="text-sm font-medium text-gray-700">昨日试驾数据</span>
         </div>
         <div className="flex">
           {/* 试驾质量 */}
