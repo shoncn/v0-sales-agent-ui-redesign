@@ -34,9 +34,22 @@ import {
   Search,
   MessageSquare,
   Settings,
+  Play,
+  ImageIcon,
+  Video,
+  Clock,
 } from "lucide-react";
 
 type AgentMode = "default" | "analysis" | "marketingMaterial" | "customerAdvisor" | "acquisitionHelper" | "taskHelper";
+
+// Marketing flow step
+type MarketingStep = 
+  | "selectType"           // Select: image or video
+  | "selectDirection"      // Select: 种草视频, 新车型, 促销
+  | "showLibrary"          // Show library videos
+  | "askRecreate"          // Ask if want to recreate
+  | "generating"           // Generating video
+  | "complete";            // Show final result
 
 interface FullscreenAgentProps {
   isOpen: boolean;
@@ -98,6 +111,15 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
   const [showRightPanel, setShowRightPanel] = useState(false);
   const [visibleLines, setVisibleLines] = useState<number>(0); // For line-by-line display
   
+  // Marketing flow state
+  const [marketingStep, setMarketingStep] = useState<MarketingStep>("selectType");
+  const [selectedMaterialType, setSelectedMaterialType] = useState<string>("");
+  const [selectedDirection, setSelectedDirection] = useState<string>("");
+  const [videoGenerationProgress, setVideoGenerationProgress] = useState(0);
+  const [showMarketingRightPanel, setShowMarketingRightPanel] = useState(false);
+  const [marketingLibraryLoaded, setMarketingLibraryLoaded] = useState(false);
+  const [videoGenerationComplete, setVideoGenerationComplete] = useState(false);
+  
   const scrollRef = useRef<HTMLDivElement>(null);
   const rightScrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -116,6 +138,14 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
       setVisibleReportSections([]);
       setShowRightPanel(false);
       setVisibleLines(0);
+      // Reset marketing state
+      setMarketingStep("selectType");
+      setSelectedMaterialType("");
+      setSelectedDirection("");
+      setVideoGenerationProgress(0);
+      setShowMarketingRightPanel(false);
+      setMarketingLibraryLoaded(false);
+      setVideoGenerationComplete(false);
     }
   }, [isOpen, initialMode]);
 
@@ -243,15 +273,66 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     setVisibleReportSections([]);
     setShowRightPanel(false);
     setVisibleLines(0);
+    // Reset marketing state
+    setMarketingStep("selectType");
+    setSelectedMaterialType("");
+    setSelectedDirection("");
+    setVideoGenerationProgress(0);
+    setShowMarketingRightPanel(false);
+    setMarketingLibraryLoaded(false);
+    setVideoGenerationComplete(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (message.trim() && !isAnalyzing) {
-        startAnalysis();
+        // Check if in marketing flow and waiting for user input
+        if (mode === "acquisitionHelper" && marketingStep === "askRecreate") {
+          handleRecreateConfirm();
+        } else {
+          startAnalysis();
+        }
       }
     }
+  };
+
+  // Marketing flow handlers
+  const handleSelectMaterialType = (type: string) => {
+    setSelectedMaterialType(type);
+    setMarketingStep("selectDirection");
+    setShowWelcome(false);
+  };
+
+  const handleSelectDirection = (direction: string) => {
+    setSelectedDirection(direction);
+    setMarketingStep("showLibrary");
+    setShowMarketingRightPanel(true);
+    // Simulate library loading
+    setTimeout(() => {
+      setMarketingLibraryLoaded(true);
+      setMarketingStep("askRecreate");
+    }, 1500);
+  };
+
+  const handleRecreateConfirm = () => {
+    setMarketingStep("generating");
+    setMessage("");
+    // Start video generation progress
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 3 + 1;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        setVideoGenerationProgress(100);
+        setTimeout(() => {
+          setMarketingStep("complete");
+          setVideoGenerationComplete(true);
+        }, 500);
+      }
+      setVideoGenerationProgress(Math.min(progress, 100));
+    }, 500);
   };
 
   if (!isOpen) return null;
@@ -675,6 +756,316 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     );
   };
 
+  // Render marketing/acquisition helper welcome
+  const renderMarketingWelcome = () => (
+    <div className="flex-1 overflow-y-auto">
+      <div className="max-w-xl mx-auto px-6 py-8">
+        {/* AI Welcome Message */}
+        <div className="flex items-start gap-3 mb-6">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <div className="flex-1 text-sm text-gray-700 leading-relaxed">
+            <p>您希望我创作哪种类型的营销素材呢</p>
+          </div>
+        </div>
+
+        {/* Material type options */}
+        <div className="flex gap-3 ml-11">
+          <button
+            type="button"
+            onClick={() => handleSelectMaterialType("image")}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl active:bg-gray-50 transition-colors"
+          >
+            <ImageIcon className="w-4 h-4 text-amber-500" />
+            <span className="text-sm text-gray-700">图片素材</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSelectMaterialType("video")}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl active:bg-gray-50 transition-colors"
+          >
+            <Video className="w-4 h-4 text-blue-500" />
+            <span className="text-sm text-gray-700">短视频素材</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render marketing flow (after type selection)
+  const renderMarketingFlow = () => (
+    <div ref={scrollRef} className="flex-1 overflow-y-auto">
+      <div className={`${showMarketingRightPanel ? 'px-6' : 'max-w-xl mx-auto px-6'} py-6 space-y-4`}>
+        {/* Step 1: Type selection result */}
+        <div className="flex justify-end mb-4">
+          <div className="bg-gray-100 rounded-2xl px-4 py-2.5">
+            <p className="text-sm text-gray-700">
+              {selectedMaterialType === "video" ? "短视频素材" : "图片素材"}
+            </p>
+          </div>
+        </div>
+
+        {/* Step 2: Direction question */}
+        {marketingStep !== "selectType" && (
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1 space-y-3">
+              <p className="text-sm text-gray-700">那么下一步创作哪个方向的营销内容呢</p>
+              
+              {marketingStep === "selectDirection" && (
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectDirection("种草视频")}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 active:bg-gray-50 transition-colors"
+                  >
+                    种草视频
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectDirection("新车型亮点宣传")}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 active:bg-gray-50 transition-colors"
+                  >
+                    新车型亮点宣传
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectDirection("促销政策")}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 active:bg-gray-50 transition-colors"
+                  >
+                    促销政策
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: User selected direction */}
+        {selectedDirection && (
+          <div className="flex justify-end">
+            <div className="bg-gray-100 rounded-2xl px-4 py-2.5">
+              <p className="text-sm text-gray-700">{selectedDirection}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Loading library */}
+        {marketingStep === "showLibrary" && !marketingLibraryLoaded && (
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex items-center gap-2 text-gray-500">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">检索内容库素材内容...</span>
+            </div>
+          </div>
+        )}
+
+        {/* Step 5: Ask recreate */}
+        {(marketingStep === "askRecreate" || marketingStep === "generating" || marketingStep === "complete") && (
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1 space-y-3">
+              <p className="text-sm text-gray-700">下一步是否为您重新创作？</p>
+              {marketingStep === "askRecreate" && (
+                <button
+                  type="button"
+                  onClick={handleRecreateConfirm}
+                  className="px-4 py-2 bg-emerald-500 text-white rounded-xl text-sm font-medium active:bg-emerald-600 transition-colors"
+                >
+                  好的
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Step 6: User confirmed */}
+        {(marketingStep === "generating" || marketingStep === "complete") && (
+          <div className="flex justify-end">
+            <div className="bg-gray-100 rounded-2xl px-4 py-2.5">
+              <p className="text-sm text-gray-700">好的</p>
+            </div>
+          </div>
+        )}
+
+        {/* Step 7: Generating */}
+        {marketingStep === "generating" && (
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1 space-y-3">
+              <p className="text-sm text-gray-700">正在生成视频，这可能需要几分钟时间，请稍后回来查看完成状态</p>
+              {/* Progress bar */}
+              <div className="bg-gray-100 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-gray-500">生成进度</span>
+                  <span className="text-xs font-medium text-blue-600">{Math.round(videoGenerationProgress)}%</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
+                    style={{ width: `${videoGenerationProgress}%` }}
+                  />
+                </div>
+                <div className="flex items-center gap-2 mt-3 text-xs text-gray-500">
+                  <Clock className="w-3 h-3" />
+                  <span>预计需要 1-3 分钟</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 8: Complete */}
+        {marketingStep === "complete" && (
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1 space-y-3">
+              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                  <span className="text-sm font-medium text-emerald-800">视频生成完成</span>
+                </div>
+                <p className="text-xs text-gray-600 mt-2 ml-7">请在右侧查看生成的视频内容</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // Render marketing right panel (library videos / generated video)
+  const renderMarketingRightPanel = () => {
+    return (
+      <div className="flex flex-col h-full bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+          <div className="flex items-center gap-2">
+            <Video className="w-4 h-4 text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">
+              {videoGenerationComplete ? "生成结果" : "内容库素材"}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 bg-transparent"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {!videoGenerationComplete ? (
+            <>
+              {/* Library loading */}
+              {!marketingLibraryLoaded && (
+                <div className="flex items-center justify-center h-40">
+                  <div className="flex items-center gap-2 text-gray-500">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span className="text-sm">检索内容库素材内容...</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Library videos */}
+              {marketingLibraryLoaded && (
+                <div className="space-y-4 animate-in fade-in duration-500">
+                  <p className="text-sm text-gray-700">为您找到以下热门素材：</p>
+                  
+                  {/* Video thumbnails */}
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { title: "理想L9家庭出游", duration: "00:02:30", views: "12.5万" },
+                      { title: "理想L8城市通勤", duration: "00:01:45", views: "8.2万" },
+                      { title: "理想L7周末自驾", duration: "00:03:15", views: "15.8万" },
+                    ].map((video, index) => (
+                      <div key={index} className="bg-gray-100 rounded-xl overflow-hidden">
+                        <div className="relative aspect-[9/16] bg-gradient-to-br from-gray-200 to-gray-300">
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-10 h-10 bg-white/80 rounded-full flex items-center justify-center">
+                              <Play className="w-5 h-5 text-gray-700 ml-0.5" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                            {video.duration}
+                          </div>
+                        </div>
+                        <div className="p-2">
+                          <p className="text-xs font-medium text-gray-700 truncate">{video.title}</p>
+                          <p className="text-[10px] text-gray-500">{video.views} 播放</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            /* Generated video result */
+            <div className="space-y-4 animate-in fade-in duration-500">
+              <p className="text-sm text-gray-700">视频已生成完成：</p>
+              
+              {/* Final video preview - using provided image */}
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="relative">
+                  <img 
+                    src="/images/20260131-163106.jpg" 
+                    alt="理想i6评测视频" 
+                    className="w-full aspect-video object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                      <Play className="w-7 h-7 text-gray-800 ml-1" />
+                    </div>
+                  </div>
+                  <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    00:03:50
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h4 className="font-medium text-gray-800 mb-1">全网最详细理想i6评测</h4>
+                  <p className="text-sm text-gray-500">种草视频 · 刚刚生成</p>
+                  
+                  {/* Action buttons */}
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      type="button"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 text-white rounded-lg text-sm font-medium active:bg-emerald-600 transition-colors"
+                    >
+                      <Download className="w-4 h-4" />
+                      下载视频
+                    </button>
+                    <button
+                      type="button"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium active:bg-gray-50 transition-colors"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      分享
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // Render default welcome (no mode selected)
   const renderDefaultWelcome = () => (
     <div className="flex-1 overflow-y-auto">
@@ -708,6 +1099,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           </button>
           <button
             type="button"
+            onClick={() => setMode("acquisitionHelper")}
             className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl active:bg-amber-100 transition-colors text-left"
           >
             <Users className="w-5 h-5 text-amber-600" />
@@ -808,7 +1200,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Main Content Area */}
         <div className="flex-1 flex bg-white">
           {/* Chat Panel - Dynamic width */}
-          <div className={`flex flex-col transition-all duration-500 ease-in-out ${showRightPanel ? 'w-[420px] border-r border-gray-200' : 'flex-1'}`}>
+          <div className={`flex flex-col transition-all duration-500 ease-in-out ${(showRightPanel || showMarketingRightPanel) ? 'w-[420px] border-r border-gray-200' : 'flex-1'}`}>
             {/* Header */}
             <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
@@ -830,9 +1222,11 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             {mode === "default" && showWelcome && renderDefaultWelcome()}
             {mode === "analysis" && showWelcome && renderAnalysisWelcome()}
             {mode === "analysis" && !showWelcome && renderAnalysisThinking()}
+            {mode === "acquisitionHelper" && showWelcome && renderMarketingWelcome()}
+            {mode === "acquisitionHelper" && !showWelcome && renderMarketingFlow()}
 
             {/* Input Area - Fixed at bottom center */}
-            <div className={`shrink-0 ${showRightPanel ? '' : 'max-w-xl mx-auto w-full'}`}>
+            <div className={`shrink-0 ${(showRightPanel || showMarketingRightPanel) ? '' : 'max-w-xl mx-auto w-full'}`}>
               {renderInputArea()}
             </div>
           </div>
@@ -841,6 +1235,13 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           {showRightPanel && (
             <div className="flex-1 p-4 bg-gray-50 animate-in slide-in-from-right duration-500">
               {renderAnalysisReport()}
+            </div>
+          )}
+
+          {/* Right Panel - Marketing content */}
+          {showMarketingRightPanel && (
+            <div className="flex-1 p-4 bg-gray-50 animate-in slide-in-from-right duration-500">
+              {renderMarketingRightPanel()}
             </div>
           )}
         </div>

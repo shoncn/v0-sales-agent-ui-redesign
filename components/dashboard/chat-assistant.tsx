@@ -134,12 +134,8 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   };
 
   const enterMarketingMaterial = () => {
-    setCurrentMode("marketingMaterial");
-    setMarketingStep("selectType");
-    setUploadedImage(null);
-    setLiked(false);
-    setDisliked(false);
-    setHasContent(true);
+    // Open fullscreen agent with acquisition helper mode
+    onOpenFullscreen?.("acquisitionHelper");
   };
 
   const resetToDefault = () => {
