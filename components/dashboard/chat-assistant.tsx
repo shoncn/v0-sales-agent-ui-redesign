@@ -2,10 +2,10 @@
 
 import React from "react"
 
-import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, Sparkles, Plus, Mic } from "lucide-react";
+import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, Sparkles, Plus, Mic, ThumbsUp, ThumbsDown, Share2, RefreshCw, X, Upload, ImageIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
-type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis";
+type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis" | "marketingMaterial";
 
 interface AnalysisStep {
   id: string;
@@ -15,6 +15,15 @@ interface AnalysisStep {
   data?: unknown;
   isComplete: boolean;
 }
+
+// Marketing material conversation step
+type MarketingStep = 
+  | "selectType" 
+  | "selectDirection" 
+  | "showLibraryImage" 
+  | "uploadImage" 
+  | "showGeneratedImage"
+  | "shareOptions";
 
 interface ChatAssistantProps {
   mode?: AssistantMode;
@@ -52,6 +61,14 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   const [currentMode, setCurrentMode] = useState<AssistantMode>(mode);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Marketing material flow state
+  const [marketingStep, setMarketingStep] = useState<MarketingStep>("selectType");
+  const [showSharePopup, setShowSharePopup] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
 
   useEffect(() => {
     setCurrentMode(mode);
@@ -76,6 +93,14 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     setMessage("");
   };
 
+  const enterMarketingMaterial = () => {
+    setCurrentMode("marketingMaterial");
+    setMarketingStep("selectType");
+    setUploadedImage(null);
+    setLiked(false);
+    setDisliked(false);
+  };
+
   const resetToDefault = () => {
     setCurrentMode("default");
     setShowInitial(true);
@@ -83,6 +108,9 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     setCurrentStepIndex(-1);
     setIsAnalyzing(false);
     setMessage("");
+    setMarketingStep("selectType");
+    setShowSharePopup(false);
+    setUploadedImage(null);
     onModeChange?.("default");
   };
 
@@ -102,7 +130,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [currentSteps, currentMode]);
+  }, [currentSteps, currentMode, marketingStep]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -148,6 +176,18 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     if (e.key === 'Enter' && !e.shiftKey && !isAnalyzing && message.trim()) {
       e.preventDefault();
       startAnalysis(message);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setUploadedImage(event.target?.result as string);
+        setMarketingStep("showGeneratedImage");
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -218,16 +258,305 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
       </div>
 
       <div className="flex gap-2">
-        <button type="button" className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-xl transition-colors">
+        <button type="button" className="flex-1 px-4 py-3 bg-emerald-500 active:bg-emerald-600 text-white text-sm font-medium rounded-xl transition-colors">
           一键发送至企微
         </button>
-        <button type="button" className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors">
+        <button 
+          type="button" 
+          onClick={enterMarketingMaterial}
+          className="flex-1 px-4 py-3 bg-blue-500 active:bg-blue-600 text-white text-sm font-medium rounded-xl transition-colors"
+        >
           生成营销素材
         </button>
-        <button type="button" className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors border border-gray-200">
+        <button type="button" className="px-4 py-3 bg-gray-100 active:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors border border-gray-200">
           编辑
         </button>
       </div>
+    </div>
+  );
+
+  // Marketing Material Conversation Flow
+  const renderMarketingMaterialView = () => (
+    <div className="p-6 space-y-4">
+      {/* Step 1: Select Type */}
+      <div className="space-y-3">
+        <div className="inline-flex items-start gap-2 max-w-[90%]">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
+            <p className="text-sm text-gray-700">您希望我为{customerName}创作哪种类型的营销素材呢？</p>
+          </div>
+        </div>
+
+        {marketingStep === "selectType" && (
+          <div className="flex gap-2 ml-10">
+            <button
+              type="button"
+              onClick={() => setMarketingStep("selectDirection")}
+              className="px-4 py-2.5 bg-white border border-emerald-200 text-emerald-600 rounded-xl text-sm font-medium active:bg-emerald-50 transition-colors"
+            >
+              图片素材
+            </button>
+            <button
+              type="button"
+              className="px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors"
+            >
+              短视频素材
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Step 2: Select Direction */}
+      {(marketingStep === "selectDirection" || marketingStep === "showLibraryImage" || marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
+        <div className="space-y-3">
+          {/* User selection */}
+          <div className="flex justify-end">
+            <div className="bg-emerald-500 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm">
+              <p className="text-sm">图片素材</p>
+            </div>
+          </div>
+
+          {/* AI response */}
+          <div className="inline-flex items-start gap-2 max-w-[90%]">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
+              <p className="text-sm text-gray-700">那么下一步创作哪个方向的营销内容呢？</p>
+            </div>
+          </div>
+
+          {marketingStep === "selectDirection" && (
+            <div className="flex flex-wrap gap-2 ml-10">
+              <button
+                type="button"
+                onClick={() => setMarketingStep("showLibraryImage")}
+                className="px-4 py-2.5 bg-white border border-emerald-200 text-emerald-600 rounded-xl text-sm font-medium active:bg-emerald-50 transition-colors"
+              >
+                种草图片
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors"
+              >
+                新车型亮点宣传
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors"
+              >
+                促销政策
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Step 3: Show Library Image */}
+      {(marketingStep === "showLibraryImage" || marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
+        <div className="space-y-3">
+          {/* User selection */}
+          <div className="flex justify-end">
+            <div className="bg-emerald-500 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm">
+              <p className="text-sm">种草图片</p>
+            </div>
+          </div>
+
+          {/* AI response with image */}
+          <div className="inline-flex items-start gap-2 max-w-[90%]">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="space-y-2">
+              <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
+                <p className="text-sm text-gray-700">已为您检索到L9的素材库图片，是否直接使用？</p>
+              </div>
+              <div className="rounded-xl overflow-hidden border border-gray-200">
+                <img 
+                  src="/images/l9-showroom.jpg" 
+                  alt="理想L9展厅图" 
+                  className="w-full h-40 object-cover"
+                />
+              </div>
+            </div>
+          </div>
+
+          {marketingStep === "showLibraryImage" && (
+            <div className="flex gap-2 ml-10">
+              <button
+                type="button"
+                className="px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors"
+              >
+                好的
+              </button>
+              <button
+                type="button"
+                onClick={() => setMarketingStep("uploadImage")}
+                className="px-4 py-2.5 bg-white border border-emerald-200 text-emerald-600 rounded-xl text-sm font-medium active:bg-emerald-50 transition-colors"
+              >
+                不，新创建生成
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Step 4: Upload Image */}
+      {(marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
+        <div className="space-y-3">
+          {/* User selection */}
+          <div className="flex justify-end">
+            <div className="bg-emerald-500 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm">
+              <p className="text-sm">不，新创建生成</p>
+            </div>
+          </div>
+
+          {/* AI response - upload prompt */}
+          <div className="inline-flex items-start gap-2 max-w-[90%]">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
+              <p className="text-sm text-gray-700">请上传一张您想要使用的图片，我将基于此进行创作。</p>
+            </div>
+          </div>
+
+          {marketingStep === "uploadImage" && (
+            <div className="ml-10">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 px-4 py-3 bg-white border border-dashed border-gray-300 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors w-full justify-center"
+              >
+                <Upload className="w-4 h-4" />
+                点击上传图片
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Step 5: Show Generated Image */}
+      {marketingStep === "showGeneratedImage" && (
+        <div className="space-y-3">
+          {/* Show uploaded image as user message */}
+          {uploadedImage && (
+            <div className="flex justify-end">
+              <div className="rounded-xl overflow-hidden border border-gray-200 max-w-[60%]">
+                <img 
+                  src={uploadedImage || "/placeholder.svg"} 
+                  alt="用户上传的图片" 
+                  className="w-full h-32 object-cover"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* AI response with generated content */}
+          <div className="inline-flex items-start gap-2 max-w-[90%]">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="space-y-2">
+              <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
+                <p className="text-sm text-gray-700">
+                  根据您提供的{customerName}的信息结合家庭属性，考虑已成为二胎家庭，充满童趣~可爱的氛围有助于拉近彼此感情
+                </p>
+              </div>
+              <div className="rounded-xl overflow-hidden border border-gray-200">
+                <img 
+                  src="/images/l9-family.jpg" 
+                  alt="生成的营销图片" 
+                  className="w-full h-44 object-cover"
+                />
+                {/* Action buttons */}
+                <div className="flex items-center justify-between px-3 py-2 bg-white border-t border-gray-100">
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => { setLiked(!liked); setDisliked(false); }}
+                      className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${liked ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 active:bg-gray-100'}`}
+                    >
+                      <ThumbsUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setDisliked(!disliked); setLiked(false); }}
+                      className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${disliked ? 'bg-red-100 text-red-600' : 'text-gray-400 active:bg-gray-100'}`}
+                    >
+                      <ThumbsDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowSharePopup(true)}
+                      className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 active:bg-gray-100 transition-colors"
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 active:bg-gray-100 transition-colors"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share Popup */}
+      {showSharePopup && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setShowSharePopup(false)}>
+          <div className="bg-white rounded-2xl p-5 w-64 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-800">分享至</h3>
+              <button
+                type="button"
+                onClick={() => setShowSharePopup(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 active:bg-gray-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setShowSharePopup(false)}
+                className="w-full flex items-center gap-3 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm font-medium active:bg-green-100 transition-colors"
+              >
+                <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                  <Users className="w-4 h-4 text-white" />
+                </div>
+                企业微信
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSharePopup(false)}
+                className="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-700 text-sm font-medium active:bg-blue-100 transition-colors"
+              >
+                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <ImageIcon className="w-4 h-4 text-white" />
+                </div>
+                微信朋友圈
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -302,7 +631,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
             key={i}
             type="button"
             onClick={() => startAnalysis(q)}
-            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all"
+            className="w-full text-left px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 active:border-emerald-300 active:bg-emerald-50/50 transition-all"
           >
             {q}
           </button>
@@ -412,7 +741,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
                 <div className="px-4 pb-4">
                   <button
                     type="button"
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-500 active:bg-emerald-600 text-white rounded-xl font-medium transition-colors"
                   >
                     <Download className="w-4 h-4" />
                     导出完整分析报告
@@ -442,6 +771,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
         {currentMode === "analysis" && renderAnalysisView()}
         {currentMode === "customerProfile" && renderCustomerProfile()}
         {currentMode === "actionStrategy" && renderActionStrategy()}
+        {currentMode === "marketingMaterial" && renderMarketingMaterialView()}
       </div>
 
       {/* LLM Style Input Area */}
@@ -468,14 +798,14 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
               <button
                 type="button"
                 onClick={resetToDefault}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
                 title="新对话"
               >
                 <Plus className="w-4 h-4" />
               </button>
               <button
                 type="button"
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                className="w-8 h-8 flex items-center justify-center rounded-lg active:bg-gray-100 transition-colors text-gray-400 active:text-gray-600"
                 title="语音输入"
               >
                 <Mic className="w-4 h-4" />
@@ -486,7 +816,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
               type="button"
               onClick={() => message.trim() && startAnalysis(message)}
               disabled={isAnalyzing || !message.trim()}
-              className="w-8 h-8 bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-colors"
+              className="w-8 h-8 bg-emerald-500 active:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-colors"
             >
               {isAnalyzing ? (
                 <Loader2 className="w-4 h-4 text-white animate-spin" />
