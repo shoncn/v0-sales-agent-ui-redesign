@@ -324,7 +324,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     </div>
   );
 
-  // Render analysis chat content
+  // Render analysis chat content - Left panel only shows thinking process
   const renderAnalysisChat = () => (
     <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4">
       {/* User question */}
@@ -334,16 +334,17 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         </div>
       </div>
 
-      {/* AI response steps */}
-      {currentSteps.map((step) => (
-        <div key={step.id} className="space-y-2">
-          {step.type === "thinking" && (
-            <div className="flex items-center gap-2 text-gray-500">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span className="text-sm">{step.content}</span>
-            </div>
-          )}
+      {/* Thinking indicator - only show when analyzing */}
+      {isAnalyzing && currentStepIndex === 0 && (
+        <div className="flex items-center gap-2 text-gray-500">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          <span className="text-sm">正在分析您的问题...</span>
+        </div>
+      )}
 
+      {/* AI thinking steps - only show thinking process */}
+      {currentSteps.filter(step => step.type === "thinking" || step.type === "data_loading").map((step) => (
+        <div key={step.id} className="space-y-2">
           {step.type === "data_loading" && (
             <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
               <div className="flex items-center gap-2 mb-2">
@@ -353,84 +354,53 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
               <p className="text-xs text-gray-500">{step.content}</p>
             </div>
           )}
-
-          {step.type === "analysis" && (
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <button
-                type="button"
-                onClick={() => toggleStepExpand(step.id)}
-                className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 border-b border-gray-100"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-sm font-medium text-gray-800">{step.title}</span>
-                </div>
-                <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${expandedSteps.has(step.id) ? "rotate-90" : ""}`} />
-              </button>
-              {expandedSteps.has(step.id) && (
-                <div className="p-4 text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-                  {step.content}
-                </div>
-              )}
-            </div>
-          )}
-
-          {step.type === "table" && (
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                <span className="text-sm font-medium text-gray-800">{step.title}</span>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-3 py-2 text-left text-gray-600">姓名</th>
-                      <th className="px-3 py-2 text-left text-gray-600">通次</th>
-                      <th className="px-3 py-2 text-left text-gray-600">通时</th>
-                      <th className="px-3 py-2 text-left text-gray-600">差距</th>
-                      <th className="px-3 py-2 text-left text-gray-600">状态</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {(step.data as typeof salesData).map((row, i) => (
-                      <tr key={i}>
-                        <td className="px-3 py-2 text-gray-800">{row.name}</td>
-                        <td className="px-3 py-2 text-gray-600">{row.calls}</td>
-                        <td className="px-3 py-2 text-gray-600">{row.duration}</td>
-                        <td className="px-3 py-2 text-gray-600">{row.gap}</td>
-                        <td className="px-3 py-2">
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] ${getStatusColor(row.status)}`}>
-                            {row.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {step.type === "conclusion" && (
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span className="text-sm font-semibold text-emerald-800">{step.title}</span>
-              </div>
-              <div className="text-sm text-gray-700 whitespace-pre-line">{step.content}</div>
-            </div>
-          )}
         </div>
       ))}
 
-      {isAnalyzing && currentStepIndex < analysisSteps.length && (
+      {/* Analysis steps - show as collapsible thinking process */}
+      {currentSteps.filter(step => step.type === "analysis").map((step, index) => (
+        <div key={step.id} className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <span className="text-sm text-gray-600">{step.title}</span>
+        </div>
+      ))}
+
+      {/* Table step indicator */}
+      {currentSteps.some(step => step.type === "table") && (
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+            <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <span className="text-sm text-gray-600">数据明细已生成</span>
+        </div>
+      )}
+
+      {/* Show analyzing progress */}
+      {isAnalyzing && currentStepIndex > 0 && currentStepIndex < analysisSteps.length && (
         <div className="flex items-center gap-2 text-gray-400">
           <Loader2 className="w-4 h-4 animate-spin" />
           <span className="text-sm">正在分析中...</span>
+        </div>
+      )}
+
+      {/* Completion indicator */}
+      {!isAnalyzing && currentSteps.length > 0 && (
+        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200 mt-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span className="text-sm font-semibold text-emerald-800">分析已完成</span>
+          </div>
+          <p className="text-xs text-gray-600 mt-2 ml-8">请在右侧面板查看完整分析报告</p>
         </div>
       )}
     </div>
@@ -622,14 +592,10 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
   // Render right content panel
   const renderRightContent = () => {
-    // For analysis mode, show data visualizations
+    // For analysis mode, show all conclusion content
     if (mode === "analysis" && currentSteps.length > 0) {
       return (
         <div className="p-6 space-y-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">数据分析面板</h3>
-          </div>
-
           {/* Summary cards */}
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-white rounded-xl p-4 border border-gray-200">
@@ -644,19 +610,46 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             </div>
           </div>
 
+          {/* Analysis dimension details */}
+          {currentSteps.filter(step => step.type === "analysis").map((step) => (
+            <div key={step.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => toggleStepExpand(step.id)}
+                className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 border-b border-gray-100"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <svg className="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-800">{step.title}</span>
+                </div>
+                <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform ${expandedSteps.has(step.id) ? "rotate-90" : ""}`} />
+              </button>
+              {expandedSteps.has(step.id) && (
+                <div className="p-4 text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                  {step.content}
+                </div>
+              )}
+            </div>
+          ))}
+
           {/* Table */}
           {currentSteps.some((s) => s.type === "table") && (
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                <span className="text-sm font-medium text-gray-800">通话数据明细</span>
+                <span className="text-sm font-medium text-gray-800">销售顾问通话数据明细</span>
               </div>
-              <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
+              <div className="overflow-x-auto max-h-[200px] overflow-y-auto">
                 <table className="w-full text-xs">
                   <thead className="bg-gray-50 sticky top-0">
                     <tr>
                       <th className="px-3 py-2 text-left text-gray-600">姓名</th>
                       <th className="px-3 py-2 text-left text-gray-600">通次</th>
                       <th className="px-3 py-2 text-left text-gray-600">通时</th>
+                      <th className="px-3 py-2 text-left text-gray-600">差距</th>
                       <th className="px-3 py-2 text-left text-gray-600">状态</th>
                     </tr>
                   </thead>
@@ -666,6 +659,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                         <td className="px-3 py-2 text-gray-800">{row.name}</td>
                         <td className="px-3 py-2 text-gray-600">{row.calls}</td>
                         <td className="px-3 py-2 text-gray-600">{row.duration}</td>
+                        <td className="px-3 py-2 text-gray-600">{row.gap}</td>
                         <td className="px-3 py-2">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] ${getStatusColor(row.status)}`}>
                             {row.status}
@@ -678,6 +672,19 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
               </div>
             </div>
           )}
+
+          {/* Conclusion */}
+          {currentSteps.some((s) => s.type === "conclusion") && !isAnalyzing && (
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="w-4 h-4 text-emerald-600" />
+                <span className="text-sm font-semibold text-emerald-800">分析报告已生成</span>
+              </div>
+              <div className="text-sm text-gray-700 whitespace-pre-line">
+                {currentSteps.find(s => s.type === "conclusion")?.content}
+              </div>
+            </div>
+          )}
         </div>
       );
     }
@@ -686,9 +693,6 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
     if (mode === "marketingMaterial") {
       return (
         <div className="p-6 space-y-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">素材预览</h3>
-          </div>
 
           {marketingStep === "showLibraryImage" && (
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -811,19 +815,31 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           </div>
 
           {/* Right: Content Panel */}
-          <div className="flex-1 bg-[#F5F7FA] overflow-y-auto">
-            {renderRightContent()}
+          <div className="flex-1 bg-[#F5F7FA] flex flex-col relative">
+            {/* Right panel header with close button */}
+            <div className="px-6 py-4 flex items-center justify-between shrink-0 border-b border-gray-200 bg-white">
+              <h3 className="text-base font-semibold text-gray-800">
+                {mode === "analysis" && "数据分析面板"}
+                {mode === "marketingMaterial" && "素材预览"}
+                {mode === "default" && "内容预览"}
+                {mode === "customerAdvisor" && "客户信息"}
+                {mode === "acquisitionHelper" && "获客数据"}
+                {mode === "taskHelper" && "任务详情"}
+              </h3>
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {/* Right panel content */}
+            <div className="flex-1 overflow-y-auto">
+              {renderRightContent()}
+            </div>
           </div>
         </div>
-
-        {/* Close Button */}
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg text-gray-500 active:bg-gray-100 z-10"
-        >
-          <X className="w-5 h-5" />
-        </button>
       </div>
 
       {/* Share Popup */}
