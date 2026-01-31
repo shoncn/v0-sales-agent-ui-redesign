@@ -30,16 +30,18 @@ function TaskCard({
   onWeChatClick,
 }: TaskCardProps) {
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-gray-800">{name}</span>
-          <span className="px-2 py-0.5 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[10px] rounded-full font-medium">
-            {statusTag}
-          </span>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="font-semibold text-gray-800 text-sm">{name}</span>
+          {statusTag && (
+            <span className="px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[9px] rounded-full font-medium">
+              {statusTag}
+            </span>
+          )}
           {secondaryTag && (
-            <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] rounded-full border border-gray-200">
+            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[9px] rounded-full border border-gray-200">
               {secondaryTag}
             </span>
           )}
@@ -47,16 +49,16 @@ function TaskCard({
       </div>
 
       {/* Last Contact */}
-      <p className="text-xs text-gray-500 mb-3">
+      <p className="text-[10px] text-gray-500 mb-2">
         最后沟通：{lastContact} | {status}
       </p>
 
       {/* Tags */}
-      <div className="flex flex-wrap gap-1.5 mb-4">
+      <div className="flex flex-wrap gap-1 mb-3">
         {redTags.map((tag, i) => (
           <span
             key={`red-${i}`}
-            className="px-2 py-1 bg-rose-50 text-rose-600 text-[10px] rounded-md border border-rose-200"
+            className="px-1.5 py-0.5 bg-rose-50 text-rose-600 text-[9px] rounded border border-rose-200"
           >
             {tag}
           </span>
@@ -64,7 +66,7 @@ function TaskCard({
         {whiteTags.map((tag, i) => (
           <span
             key={`white-${i}`}
-            className="px-2 py-1 bg-gray-50 text-gray-600 text-[10px] rounded-md border border-gray-200"
+            className="px-1.5 py-0.5 bg-gray-50 text-gray-600 text-[9px] rounded border border-gray-200"
           >
             {tag}
           </span>
@@ -72,27 +74,27 @@ function TaskCard({
       </div>
 
       {/* Actions */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <button
           type="button"
           onClick={onConsultantClick}
-          className="w-full flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs rounded-lg border border-emerald-200 transition-colors"
+          className="w-full flex items-center justify-center gap-1 px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] rounded-md border border-emerald-200 transition-colors"
         >
-          <MessageSquare className="w-3.5 h-3.5" />
+          <MessageSquare className="w-3 h-3" />
           顾问助手
         </button>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           <button
             type="button"
             onClick={onFollowUpClick}
-            className="flex-1 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs rounded-lg border border-emerald-200 transition-colors"
+            className="flex-1 px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] rounded-md border border-emerald-200 transition-colors"
           >
             写跟进
           </button>
           <button
             type="button"
             onClick={onWeChatClick}
-            className="flex-1 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs rounded-lg border border-emerald-200 transition-colors"
+            className="flex-1 px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] rounded-md border border-emerald-200 transition-colors"
           >
             发企微
           </button>
@@ -309,19 +311,19 @@ export function TaskListContent({ onConsultantClick, onActionClick }: TaskListCo
       </div>
 
       {/* Kanban Swimlanes */}
-      <div className="flex-1 p-4 overflow-x-auto">
-        <div className="flex gap-4 h-full min-w-max">
+      <div className="flex-1 p-3 overflow-x-auto">
+        <div className="flex gap-2 h-full min-w-max">
           {swimlanes.map((lane, laneIndex) => (
-            <div key={laneIndex} className="w-72 flex flex-col bg-gray-50 rounded-xl shrink-0">
+            <div key={laneIndex} className="w-56 flex flex-col bg-gray-50 rounded-xl shrink-0">
               {/* Lane Header */}
-              <div className="px-4 py-3 border-b border-gray-200 shrink-0">
-                <h3 className="font-semibold text-gray-800">
+              <div className="px-3 py-2 border-b border-gray-200 shrink-0">
+                <h3 className="font-semibold text-gray-800 text-sm">
                   {lane.title} <span className="text-gray-400 font-normal">{lane.count}</span>
                 </h3>
               </div>
 
               {/* Lane Content */}
-              <div className="flex-1 overflow-y-auto p-3 space-y-3">
+              <div className="flex-1 overflow-y-auto p-2 space-y-2">
                 {lane.tasks.map((task, taskIndex) => (
                   <TaskCard
                     key={taskIndex}
