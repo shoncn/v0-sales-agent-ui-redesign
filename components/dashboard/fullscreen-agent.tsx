@@ -464,9 +464,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
 
         {/* AI Response Area */}
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-info to-info/80 rounded-lg flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-info-foreground" />
-          </div>
+          
           <div className="flex-1 space-y-4">
             {/* Thinking indicator */}
             {isAnalyzing && !dataModulesComplete && (
