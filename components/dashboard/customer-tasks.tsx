@@ -98,14 +98,50 @@ export function CustomerTasks({ onCustomerClick }: CustomerTasksProps) {
         { label: "保存心愿单", variant: "info" as const },
         { label: "3月4日已试驾", variant: "info" as const },
         { label: "对比问界M7", variant: "outline" as const },
-        { label: "公户购车人", variant: "outline" as const },
+      ],
+    },
+    {
+      id: "zhang",
+      name: "张先生",
+      phone: "138****5678",
+      lastFollowUp: "2025-06-25",
+      isHighIntent: false,
+      tags: [
+        { label: "待跟进", variant: "warning" as const },
+        { label: "预算20~30w", variant: "info" as const },
+        { label: "首次到店", variant: "outline" as const },
+      ],
+    },
+    {
+      id: "liu",
+      name: "刘女士",
+      phone: "159****3456",
+      lastFollowUp: "2025-06-22",
+      isHighIntent: true,
+      tags: [
+        { label: "试驾排程", variant: "info" as const },
+        { label: "预算40~60w", variant: "warning" as const },
+        { label: "置换需求", variant: "danger" as const },
+        { label: "对比蔚来ES8", variant: "outline" as const },
+      ],
+    },
+    {
+      id: "chen",
+      name: "陈先生",
+      phone: "186****7890",
+      lastFollowUp: "2025-06-20",
+      isHighIntent: false,
+      tags: [
+        { label: "战败激活", variant: "danger" as const },
+        { label: "价格敏感", variant: "warning" as const },
+        { label: "对比小鹏G9", variant: "outline" as const },
       ],
     },
   ];
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-6 pb-4 border-b border-gray-100 flex items-center justify-between">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
+      <div className="p-4 border-b border-gray-100 flex items-center justify-between shrink-0">
         <h3 className="text-base font-semibold text-gray-800">
           客户跟进任务 <span className="text-emerald-600">Top 5</span>
         </h3>
@@ -117,7 +153,7 @@ export function CustomerTasks({ onCustomerClick }: CustomerTasksProps) {
         </button>
       </div>
 
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-gray-100 overflow-y-auto flex-1">
         {topCustomers.map((customer) => (
           <CustomerItem
             key={customer.id}
