@@ -1,8 +1,6 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
-
-interface CustomerCardProps {
+interface CustomerItemProps {
   name: string;
   phone: string;
   lastFollowUp: string;
@@ -11,51 +9,42 @@ interface CustomerCardProps {
   onClick?: () => void;
 }
 
-function CustomerCard({
+function CustomerItem({
   name,
   phone,
   lastFollowUp,
   tags,
   isHighIntent,
   onClick,
-}: CustomerCardProps) {
+}: CustomerItemProps) {
   const getTagStyles = (variant: string) => {
     switch (variant) {
       case "danger":
-        return "bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100";
+        return "bg-rose-50 text-rose-600 border-rose-200";
       case "warning":
-        return "bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100";
+        return "bg-amber-50 text-amber-600 border-amber-200";
       case "info":
-        return "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
+        return "bg-blue-50 text-blue-600 border-blue-200";
       default:
-        return "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100";
+        return "bg-gray-50 text-gray-600 border-gray-200";
     }
   };
 
   return (
     <div
-      className="p-4 bg-gray-50/50 rounded-xl border border-gray-100 hover:border-emerald-200 hover:shadow-sm transition-all duration-200 cursor-pointer"
+      className="p-4 border-b border-gray-100 last:border-b-0 active:bg-gray-50/50 transition-colors cursor-pointer"
       onClick={onClick}
       onKeyDown={(e) => e.key === "Enter" && onClick?.()}
       role="button"
       tabIndex={0}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-base font-semibold text-gray-800">{name}</span>
-          {isHighIntent && (
-            <span className="px-2 py-0.5 bg-gradient-to-r from-orange-400 to-rose-400 text-white text-xs font-medium rounded-full">
-              高意向
-            </span>
-          )}
-        </div>
-        <button
-          type="button"
-          className="w-8 h-8 bg-emerald-500 hover:bg-emerald-600 rounded-full flex items-center justify-center transition-colors"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MessageCircle className="w-4 h-4 text-white" />
-        </button>
+      <div className="flex items-start justify-between mb-2">
+        <span className="text-base font-semibold text-gray-800">{name}</span>
+        {isHighIntent && (
+          <span className="px-3 py-1 bg-gradient-to-r from-orange-400 to-rose-400 text-white text-xs font-medium rounded-lg">
+            高意向
+          </span>
+        )}
       </div>
 
       <div className="space-y-1 text-sm text-gray-500 mb-3">
@@ -115,14 +104,22 @@ export function CustomerTasks({ onCustomerClick }: CustomerTasksProps) {
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <h3 className="text-base font-semibold text-gray-800 mb-4">
-        客户跟进任务 Top 5
-      </h3>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="p-6 pb-4 border-b border-gray-100 flex items-center justify-between">
+        <h3 className="text-base font-semibold text-gray-800">
+          客户跟进任务 <span className="text-emerald-600">Top 5</span>
+        </h3>
+        <button
+          type="button"
+          className="text-sm text-emerald-600 active:text-emerald-700"
+        >
+          全部任务
+        </button>
+      </div>
 
-      <div className="space-y-4">
+      <div className="divide-y divide-gray-100">
         {topCustomers.map((customer) => (
-          <CustomerCard
+          <CustomerItem
             key={customer.id}
             {...customer}
             onClick={() => onCustomerClick?.(customer.id)}
