@@ -154,7 +154,7 @@ export function CustomerDetail({ onBack }: CustomerDetailProps) {
                   现有车: 宝马X5
                 </span>
                 <span className="px-2.5 py-1 bg-gray-50 text-gray-600 text-xs font-medium rounded-full border border-gray-200">
-                  对比: 问界M9
+                  对比: 问界M7
                 </span>
               </div>
             </div>
