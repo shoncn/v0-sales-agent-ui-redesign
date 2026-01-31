@@ -11,15 +11,20 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { icon: Home, label: "工作台", active: true },
-  { icon: BarChart3, label: "诊断看板", active: false },
-  { icon: ListTodo, label: "任务列表", active: false },
-  { icon: Users, label: "客户列表", active: false },
-  { icon: FolderOpen, label: "内容库", active: false },
-  { icon: Wrench, label: "工具箱", active: false },
+  { icon: Home, label: "工作台", id: "workbench" },
+  { icon: BarChart3, label: "诊断看板", id: "diagnosis" },
+  { icon: ListTodo, label: "任务列表", id: "tasks" },
+  { icon: Users, label: "客户列表", id: "customers" },
+  { icon: FolderOpen, label: "内容库", id: "content" },
+  { icon: Wrench, label: "工具箱", id: "tools" },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}
+
+export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   return (
     <aside className="w-20 bg-white border-r border-gray-100 flex flex-col items-center py-6 shrink-0">
       {/* Logo */}
@@ -35,15 +40,17 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 flex flex-col gap-1 w-full px-2">
-        {navItems.map((item, index) => {
+        {navItems.map((item) => {
           const Icon = item.icon;
+          const isActive = activeTab === item.id;
           return (
             <button
-              key={index}
+              key={item.id}
               type="button"
+              onClick={() => onTabChange(item.id)}
               className={cn(
                 "flex flex-col items-center gap-1 py-3 px-1 rounded-xl transition-all duration-200",
-                item.active
+                isActive
                   ? "bg-emerald-50 text-emerald-600"
                   : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
               )}
