@@ -275,242 +275,239 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     </div>
   );
 
-  // Marketing Material Conversation Flow
+  // Marketing Material Conversation Flow - LLM Style
   const renderMarketingMaterialView = () => (
     <div className="p-6 space-y-4">
-      {/* Step 1: Select Type */}
-      <div className="space-y-3">
-        <div className="inline-flex items-start gap-2 max-w-[90%]">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
-            <p className="text-sm text-gray-700">您希望我为{customerName}创作哪种类型的营销素材呢？</p>
+      {/* Step 1: AI asks for type */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <span className="text-sm font-semibold text-gray-800">素材类型选择</span>
           </div>
         </div>
-
-        {marketingStep === "selectType" && (
-          <div className="flex gap-2 ml-10">
-            <button
-              type="button"
-              onClick={() => setMarketingStep("selectDirection")}
-              className="px-4 py-2.5 bg-white border border-emerald-200 text-emerald-600 rounded-xl text-sm font-medium active:bg-emerald-50 transition-colors"
-            >
-              图片素材
-            </button>
-            <button
-              type="button"
-              className="px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors"
-            >
-              短视频素材
-            </button>
-          </div>
-        )}
+        <div className="p-4">
+          <p className="text-sm text-gray-700 mb-4">您希望我为<strong className="text-gray-800">{customerName}</strong>创作哪种类型的营销素材呢？</p>
+          
+          {marketingStep === "selectType" && (
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setMarketingStep("selectDirection")}
+                className="flex-1 px-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium active:bg-emerald-100 transition-colors"
+              >
+                图片素材
+              </button>
+              <button
+                type="button"
+                className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+              >
+                短视频素材
+              </button>
+            </div>
+          )}
+          {marketingStep !== "selectType" && (
+            <div className="inline-flex px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-lg text-sm">
+              已选择：图片素材
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Step 2: Select Direction */}
       {(marketingStep === "selectDirection" || marketingStep === "showLibraryImage" || marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
-        <div className="space-y-3">
-          {/* User selection */}
-          <div className="flex justify-end">
-            <div className="bg-emerald-500 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm">
-              <p className="text-sm">图片素材</p>
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Target className="w-4 h-4 text-blue-500" />
+              <span className="text-sm font-semibold text-gray-800">创作方向</span>
             </div>
           </div>
-
-          {/* AI response */}
-          <div className="inline-flex items-start gap-2 max-w-[90%]">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
-            <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
-              <p className="text-sm text-gray-700">那么下一步创作哪个方向的营销内容呢？</p>
-            </div>
+          <div className="p-4">
+            <p className="text-sm text-gray-700 mb-4">那么下一步创作哪个方向的营销内容呢？</p>
+            
+            {marketingStep === "selectDirection" && (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMarketingStep("showLibraryImage")}
+                  className="px-4 py-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium active:bg-emerald-100 transition-colors"
+                >
+                  种草图片
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+                >
+                  新车型亮点宣传
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+                >
+                  促销政策
+                </button>
+              </div>
+            )}
+            {marketingStep !== "selectDirection" && marketingStep !== "selectType" && (
+              <div className="inline-flex px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-sm">
+                已选择：种草图片
+              </div>
+            )}
           </div>
-
-          {marketingStep === "selectDirection" && (
-            <div className="flex flex-wrap gap-2 ml-10">
-              <button
-                type="button"
-                onClick={() => setMarketingStep("showLibraryImage")}
-                className="px-4 py-2.5 bg-white border border-emerald-200 text-emerald-600 rounded-xl text-sm font-medium active:bg-emerald-50 transition-colors"
-              >
-                种草图片
-              </button>
-              <button
-                type="button"
-                className="px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors"
-              >
-                新车型亮点宣传
-              </button>
-              <button
-                type="button"
-                className="px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors"
-              >
-                促销政策
-              </button>
-            </div>
-          )}
         </div>
       )}
 
       {/* Step 3: Show Library Image */}
       {(marketingStep === "showLibraryImage" || marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
-        <div className="space-y-3">
-          {/* User selection */}
-          <div className="flex justify-end">
-            <div className="bg-emerald-500 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm">
-              <p className="text-sm">种草图片</p>
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-purple-500" />
+              <span className="text-sm font-semibold text-gray-800">素材库检索</span>
             </div>
           </div>
-
-          {/* AI response with image */}
-          <div className="inline-flex items-start gap-2 max-w-[90%]">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
+          <div className="p-4 space-y-3">
+            <p className="text-sm text-gray-700">已为您检索到<strong className="text-gray-800">L9</strong>的素材库图片，是否直接使用？</p>
+            <div className="rounded-xl overflow-hidden border border-gray-200">
+              <img 
+                src="/images/l9-showroom.jpg" 
+                alt="理想L9展厅图" 
+                className="w-full h-36 object-cover"
+              />
             </div>
-            <div className="space-y-2">
-              <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
-                <p className="text-sm text-gray-700">已为您检索到L9的素材库图片，是否直接使用？</p>
+            
+            {marketingStep === "showLibraryImage" && (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+                >
+                  好的，直接使用
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMarketingStep("uploadImage")}
+                  className="flex-1 px-4 py-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium active:bg-emerald-100 transition-colors"
+                >
+                  不，新创建生成
+                </button>
               </div>
-              <div className="rounded-xl overflow-hidden border border-gray-200">
-                <img 
-                  src="/images/l9-showroom.jpg" 
-                  alt="理想L9展厅图" 
-                  className="w-full h-40 object-cover"
-                />
+            )}
+            {(marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
+              <div className="inline-flex px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-sm">
+                已选择：新创建生成
               </div>
-            </div>
+            )}
           </div>
-
-          {marketingStep === "showLibraryImage" && (
-            <div className="flex gap-2 ml-10">
-              <button
-                type="button"
-                className="px-4 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors"
-              >
-                好的
-              </button>
-              <button
-                type="button"
-                onClick={() => setMarketingStep("uploadImage")}
-                className="px-4 py-2.5 bg-white border border-emerald-200 text-emerald-600 rounded-xl text-sm font-medium active:bg-emerald-50 transition-colors"
-              >
-                不，新创建生成
-              </button>
-            </div>
-          )}
         </div>
       )}
 
       {/* Step 4: Upload Image */}
       {(marketingStep === "uploadImage" || marketingStep === "showGeneratedImage") && (
-        <div className="space-y-3">
-          {/* User selection */}
-          <div className="flex justify-end">
-            <div className="bg-emerald-500 text-white px-4 py-2.5 rounded-2xl rounded-tr-sm">
-              <p className="text-sm">不，新创建生成</p>
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Upload className="w-4 h-4 text-amber-500" />
+              <span className="text-sm font-semibold text-gray-800">上传素材</span>
             </div>
           </div>
-
-          {/* AI response - upload prompt */}
-          <div className="inline-flex items-start gap-2 max-w-[90%]">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
-            <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
-              <p className="text-sm text-gray-700">请上传一张您想要使用的图片，我将基于此进行创作。</p>
-            </div>
+          <div className="p-4 space-y-3">
+            <p className="text-sm text-gray-700">请上传一张您想要使用的图片，我将基于此进行创作。</p>
+            
+            {marketingStep === "uploadImage" && (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-gray-50 border-2 border-dashed border-gray-300 text-gray-500 rounded-xl text-sm font-medium active:bg-gray-100 transition-colors"
+                >
+                  <Upload className="w-5 h-5" />
+                  点击上传图片
+                </button>
+              </>
+            )}
+            {marketingStep === "showGeneratedImage" && uploadedImage && (
+              <div className="rounded-xl overflow-hidden border border-gray-200">
+                <img 
+                  src={uploadedImage || "/placeholder.svg"} 
+                  alt="用户上传的图片" 
+                  className="w-full h-28 object-cover"
+                />
+              </div>
+            )}
           </div>
-
-          {marketingStep === "uploadImage" && (
-            <div className="ml-10">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 px-4 py-3 bg-white border border-dashed border-gray-300 text-gray-600 rounded-xl text-sm font-medium active:bg-gray-50 transition-colors w-full justify-center"
-              >
-                <Upload className="w-4 h-4" />
-                点击上传图片
-              </button>
-            </div>
-          )}
         </div>
       )}
 
       {/* Step 5: Show Generated Image */}
       {marketingStep === "showGeneratedImage" && (
-        <div className="space-y-3">
-          {/* Show uploaded image as user message */}
-          {uploadedImage && (
-            <div className="flex justify-end">
-              <div className="rounded-xl overflow-hidden border border-gray-200 max-w-[60%]">
-                <img 
-                  src={uploadedImage || "/placeholder.svg"} 
-                  alt="用户上传的图片" 
-                  className="w-full h-32 object-cover"
-                />
-              </div>
+        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="px-4 py-3 bg-emerald-100/50 border-b border-emerald-200">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-emerald-600" />
+              <span className="text-sm font-semibold text-emerald-800">AI创作完成</span>
             </div>
-          )}
-
-          {/* AI response with generated content */}
-          <div className="inline-flex items-start gap-2 max-w-[90%]">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <div className="p-4 space-y-3">
+            <div className="text-sm text-gray-700 leading-relaxed">
+              <p>根据您提供的<strong className="text-gray-800">{customerName}</strong>的信息结合家庭属性：</p>
+              <ul className="mt-2 space-y-1 ml-4">
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500 mt-1">-</span>
+                  <span>考虑已成为<strong className="text-emerald-700">二胎家庭</strong></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-emerald-500 mt-1">-</span>
+                  <span>充满童趣、可爱的氛围有助于拉近彼此感情</span>
+                </li>
+              </ul>
             </div>
-            <div className="space-y-2">
-              <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
-                <p className="text-sm text-gray-700">
-                  根据您提供的{customerName}的信息结合家庭属性，考虑已成为二胎家庭，充满童趣~可爱的氛围有助于拉近彼此感情
-                </p>
-              </div>
-              <div className="rounded-xl overflow-hidden border border-gray-200">
-                <img 
-                  src="/images/l9-family.jpg" 
-                  alt="生成的营销图片" 
-                  className="w-full h-44 object-cover"
-                />
-                {/* Action buttons */}
-                <div className="flex items-center justify-between px-3 py-2 bg-white border-t border-gray-100">
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => { setLiked(!liked); setDisliked(false); }}
-                      className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${liked ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 active:bg-gray-100'}`}
-                    >
-                      <ThumbsUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setDisliked(!disliked); setLiked(false); }}
-                      className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${disliked ? 'bg-red-100 text-red-600' : 'text-gray-400 active:bg-gray-100'}`}
-                    >
-                      <ThumbsDown className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowSharePopup(true)}
-                      className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 active:bg-gray-100 transition-colors"
-                    >
-                      <Share2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 active:bg-gray-100 transition-colors"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                    </button>
-                  </div>
+            <div className="rounded-xl overflow-hidden border border-emerald-200 bg-white">
+              <img 
+                src="/images/l9-family.jpg" 
+                alt="生成的营销图片" 
+                className="w-full h-44 object-cover"
+              />
+              {/* Action buttons */}
+              <div className="flex items-center justify-between px-3 py-2.5 bg-white border-t border-gray-100">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => { setLiked(!liked); setDisliked(false); }}
+                    className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${liked ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 active:bg-gray-100'}`}
+                  >
+                    <ThumbsUp className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setDisliked(!disliked); setLiked(false); }}
+                    className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${disliked ? 'bg-red-100 text-red-600' : 'text-gray-400 active:bg-gray-100'}`}
+                  >
+                    <ThumbsDown className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowSharePopup(true)}
+                    className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100 transition-colors"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </button>
+                  <button
+                    type="button"
+                    className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100 transition-colors"
+                  >
+                    <RefreshCw className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -521,35 +518,35 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
       {/* Share Popup */}
       {showSharePopup && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setShowSharePopup(false)}>
-          <div className="bg-white rounded-2xl p-5 w-64 shadow-xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl p-5 w-72 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-gray-800">分享至</h3>
               <button
                 type="button"
                 onClick={() => setShowSharePopup(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 active:bg-gray-100"
+                className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 active:bg-gray-100"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <button
                 type="button"
                 onClick={() => setShowSharePopup(false)}
-                className="w-full flex items-center gap-3 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm font-medium active:bg-green-100 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm font-medium active:bg-green-100 transition-colors"
               >
-                <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                  <Users className="w-4 h-4 text-white" />
+                <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                  <Users className="w-5 h-5 text-white" />
                 </div>
                 企业微信
               </button>
               <button
                 type="button"
                 onClick={() => setShowSharePopup(false)}
-                className="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-700 text-sm font-medium active:bg-blue-100 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-4 bg-blue-50 border border-blue-200 rounded-xl text-blue-700 text-sm font-medium active:bg-blue-100 transition-colors"
               >
-                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <ImageIcon className="w-4 h-4 text-white" />
+                <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5 text-white" />
                 </div>
                 微信朋友圈
               </button>
