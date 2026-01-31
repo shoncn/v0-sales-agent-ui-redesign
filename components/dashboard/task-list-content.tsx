@@ -30,18 +30,18 @@ function TaskCard({
   onWeChatClick,
 }: TaskCardProps) {
   return (
-    <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 active:shadow-md transition-shadow">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="font-semibold text-gray-800 text-sm">{name}</span>
           {statusTag && (
-            <span className="px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[9px] rounded-full font-medium">
+            <span className="px-2 py-1 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[10px] rounded-full font-medium">
               {statusTag}
             </span>
           )}
           {secondaryTag && (
-            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 text-[9px] rounded-full border border-gray-200">
+            <span className="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] rounded-full border border-gray-200">
               {secondaryTag}
             </span>
           )}
@@ -49,16 +49,16 @@ function TaskCard({
       </div>
 
       {/* Last Contact */}
-      <p className="text-[10px] text-gray-500 mb-2">
+      <p className="text-[11px] text-gray-500 mb-2">
         最后沟通：{lastContact} | {status}
       </p>
 
       {/* Tags */}
-      <div className="flex flex-wrap gap-1 mb-3">
+      <div className="flex flex-wrap gap-1.5 mb-3">
         {redTags.map((tag, i) => (
           <span
             key={`red-${i}`}
-            className="px-1.5 py-0.5 bg-rose-50 text-rose-600 text-[9px] rounded-md border border-rose-200"
+            className="px-2 py-1 bg-rose-50 text-rose-600 text-[10px] rounded-md border border-rose-200"
           >
             {tag}
           </span>
@@ -66,7 +66,7 @@ function TaskCard({
         {whiteTags.map((tag, i) => (
           <span
             key={`white-${i}`}
-            className="px-1.5 py-0.5 bg-gray-50 text-gray-600 text-[9px] rounded-md border border-gray-200"
+            className="px-2 py-1 bg-gray-50 text-gray-600 text-[10px] rounded-md border border-gray-200"
           >
             {tag}
           </span>
@@ -74,27 +74,27 @@ function TaskCard({
       </div>
 
       {/* Actions */}
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <button
           type="button"
           onClick={onConsultantClick}
-          className="w-full flex items-center justify-center gap-1 px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] rounded-md border border-emerald-200 transition-colors"
+          className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 bg-emerald-50 active:bg-emerald-100 text-emerald-700 text-xs rounded-lg border border-emerald-200 transition-colors"
         >
-          <MessageSquare className="w-3 h-3" />
+          <MessageSquare className="w-4 h-4" />
           顾问助手
         </button>
-        <div className="flex gap-1.5">
+        <div className="flex gap-2">
           <button
             type="button"
             onClick={onFollowUpClick}
-            className="flex-1 px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] rounded-md border border-emerald-200 transition-colors"
+            className="flex-1 px-3 py-2.5 bg-emerald-50 active:bg-emerald-100 text-emerald-700 text-xs rounded-lg border border-emerald-200 transition-colors"
           >
             写跟进
           </button>
           <button
             type="button"
             onClick={onWeChatClick}
-            className="flex-1 px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] rounded-md border border-emerald-200 transition-colors"
+            className="flex-1 px-3 py-2.5 bg-emerald-50 active:bg-emerald-100 text-emerald-700 text-xs rounded-lg border border-emerald-200 transition-colors"
           >
             发企微
           </button>

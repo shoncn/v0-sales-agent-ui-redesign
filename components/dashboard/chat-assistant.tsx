@@ -245,34 +245,34 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
       </p>
 
       {/* Quick Action Chips */}
-      <div className="w-full max-w-md grid grid-cols-2 gap-2 mb-6">
+      <div className="w-full max-w-md grid grid-cols-2 gap-3 mb-6">
         <button
           type="button"
           onClick={enterBusinessDiagnosis}
-          className="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left"
+          className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-emerald-300 active:bg-emerald-50 transition-all text-left"
         >
-          <BarChart3 className="w-4 h-4 text-emerald-500 shrink-0" />
+          <BarChart3 className="w-5 h-5 text-emerald-500 shrink-0" />
           <span className="text-sm text-gray-700">业务诊断</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all text-left"
+          className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-blue-300 active:bg-blue-50 transition-all text-left"
         >
-          <User className="w-4 h-4 text-blue-500 shrink-0" />
+          <User className="w-5 h-5 text-blue-500 shrink-0" />
           <span className="text-sm text-gray-700">客户顾问</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-amber-300 hover:bg-amber-50 transition-all text-left"
+          className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-amber-300 active:bg-amber-50 transition-all text-left"
         >
-          <Users className="w-4 h-4 text-amber-500 shrink-0" />
+          <Users className="w-5 h-5 text-amber-500 shrink-0" />
           <span className="text-sm text-gray-700">获客助手</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-xl hover:border-rose-300 hover:bg-rose-50 transition-all text-left"
+          className="flex items-center gap-3 px-4 py-4 bg-white border border-gray-200 rounded-xl active:border-rose-300 active:bg-rose-50 transition-all text-left"
         >
-          <Target className="w-4 h-4 text-rose-500 shrink-0" />
+          <Target className="w-5 h-5 text-rose-500 shrink-0" />
           <span className="text-sm text-gray-700">帮我干活</span>
         </button>
       </div>

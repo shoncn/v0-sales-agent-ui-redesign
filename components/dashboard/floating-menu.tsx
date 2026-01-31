@@ -31,9 +31,9 @@ interface FloatingMenuProps {
 export function FloatingMenu({ activeTab, onTabChange, isOpen, onClose }: FloatingMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu when clicking outside
+  // Close menu when tapping outside (touch-friendly)
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleTouchOrClick = (event: TouchEvent | MouseEvent) => {
       if (
         isOpen &&
         menuRef.current &&
@@ -43,8 +43,12 @@ export function FloatingMenu({ activeTab, onTabChange, isOpen, onClose }: Floati
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleTouchOrClick);
+    document.addEventListener("mousedown", handleTouchOrClick);
+    return () => {
+      document.removeEventListener("touchstart", handleTouchOrClick);
+      document.removeEventListener("mousedown", handleTouchOrClick);
+    };
   }, [isOpen, onClose]);
 
   const handleItemClick = (tabId: string) => {
@@ -68,19 +72,19 @@ export function FloatingMenu({ activeTab, onTabChange, isOpen, onClose }: Floati
         className="absolute left-4 top-16 z-50 bg-white rounded-xl shadow-2xl p-4 w-[260px] animate-in fade-in slide-in-from-top-2 duration-200"
       >
         {/* Header with Close Button */}
-        <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
           <span className="text-sm font-medium text-gray-700">导航菜单</span>
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-400"
+            className="w-10 h-10 flex items-center justify-center rounded-xl active:bg-gray-100 transition-colors text-gray-400"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Menu Grid - 3 items per row */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-3">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -90,14 +94,14 @@ export function FloatingMenu({ activeTab, onTabChange, isOpen, onClose }: Floati
                 type="button"
                 onClick={() => handleItemClick(item.id)}
                 className={cn(
-                  "flex flex-col items-center gap-1.5 py-3 px-2 rounded-lg transition-all duration-200",
+                  "flex flex-col items-center gap-2 py-4 px-2 rounded-xl transition-all duration-200",
                   isActive
                     ? "bg-emerald-50 text-emerald-600"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                    : "text-gray-500 active:bg-gray-100 active:text-gray-700"
                 )}
               >
-                <Icon className="w-5 h-5" strokeWidth={1.5} />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <Icon className="w-6 h-6" strokeWidth={1.5} />
+                <span className="text-xs font-medium">{item.label}</span>
               </button>
             );
           })}
