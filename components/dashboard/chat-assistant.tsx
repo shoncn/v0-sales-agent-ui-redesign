@@ -7,6 +7,20 @@ import { useState, useEffect, useRef } from "react";
 
 type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis" | "marketingMaterial";
 
+// Conversation history entry
+interface ConversationEntry {
+  id: string;
+  mode: AssistantMode;
+  customerName?: string;
+  content?: {
+    message?: string;
+    steps?: AnalysisStep[];
+    marketingStep?: MarketingStep;
+    uploadedImage?: string | null;
+  };
+  timestamp: Date;
+}
+
 interface AnalysisStep {
   id: string;
   type: 'thinking' | 'data_loading' | 'analysis' | 'table' | 'chart' | 'conclusion' | 'report';
@@ -64,6 +78,10 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Conversation history to preserve content when switching pages
+  const [conversationHistory, setConversationHistory] = useState<ConversationEntry[]>([]);
+  const [hasContent, setHasContent] = useState(false);
+
   // Marketing material flow state
   const [marketingStep, setMarketingStep] = useState<MarketingStep>("selectType");
   const [showSharePopup, setShowSharePopup] = useState(false);
@@ -72,9 +90,27 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   const [disliked, setDisliked] = useState(false);
 
   useEffect(() => {
+    // Save current content to history before switching modes
+    if (currentMode !== "default" && currentMode !== mode && hasContent) {
+      const entry: ConversationEntry = {
+        id: `${Date.now()}`,
+        mode: currentMode,
+        customerName,
+        content: {
+          message,
+          steps: currentSteps,
+          marketingStep,
+          uploadedImage,
+        },
+        timestamp: new Date(),
+      };
+      setConversationHistory(prev => [...prev, entry]);
+    }
+    
     setCurrentMode(mode);
     if (mode === "customerProfile" || mode === "actionStrategy") {
       setShowInitial(false);
+      setHasContent(true);
     }
   }, [mode]);
 
@@ -86,12 +122,14 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     setIsAnalyzing(true);
     setCurrentSteps([]);
     setCurrentStepIndex(0);
+    setHasContent(true);
   };
 
   const enterBusinessDiagnosis = () => {
     setShowInitial(false);
     setCurrentMode("businessDiagnosis");
     setMessage("");
+    setHasContent(true);
   };
 
   const enterMarketingMaterial = () => {
@@ -100,6 +138,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     setUploadedImage(null);
     setLiked(false);
     setDisliked(false);
+    setHasContent(true);
   };
 
   const resetToDefault = () => {
@@ -112,6 +151,8 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     setMarketingStep("selectType");
     setShowSharePopup(false);
     setUploadedImage(null);
+    setConversationHistory([]);
+    setHasContent(false);
     onModeChange?.("default");
   };
 
@@ -229,6 +270,63 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
       return () => clearInterval(stepInterval);
     }
   }, [marketingStep]);
+
+  // Render a history entry (completed conversation)
+  const renderHistoryEntry = (entry: ConversationEntry) => {
+    const getModeLabel = (mode: AssistantMode) => {
+      switch(mode) {
+        case "customerProfile": return "客户画像";
+        case "actionStrategy": return "行动策略";
+        case "marketingMaterial": return "营销素材";
+        case "analysis": return "业务分析";
+        case "businessDiagnosis": return "业务诊断";
+        default: return "对话";
+      }
+    };
+    
+    return (
+      <div key={entry.id} className="border-b border-gray-100 pb-4 mb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+            <Sparkles className="w-3 h-3 text-emerald-600" />
+          </div>
+          <span className="text-xs font-medium text-gray-500">{getModeLabel(entry.mode)}</span>
+          {entry.customerName && (
+            <span className="text-xs text-gray-400">- {entry.customerName}</span>
+          )}
+        </div>
+        
+        {entry.mode === "marketingMaterial" && entry.content?.uploadedImage && (
+          <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100">
+            <p className="text-xs text-gray-600 mb-2">已为{entry.customerName}生成营销素材</p>
+            <img 
+              src="/images/l9-family.jpg" 
+              alt="生成的营销图片" 
+              className="w-full h-24 object-cover rounded-lg"
+            />
+          </div>
+        )}
+        
+        {entry.mode === "actionStrategy" && (
+          <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
+            <p className="text-xs text-gray-600">已为{entry.customerName}生成行动策略</p>
+          </div>
+        )}
+        
+        {entry.mode === "customerProfile" && (
+          <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100">
+            <p className="text-xs text-gray-600">已查看{entry.customerName}的客户画像</p>
+          </div>
+        )}
+        
+        {entry.mode === "analysis" && entry.content?.message && (
+          <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+            <p className="text-xs text-gray-600 line-clamp-2">{entry.content.message}</p>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Customer Profile Content
   const renderCustomerProfile = () => (
@@ -865,8 +963,32 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
 
   return (
     <aside className="w-[330px] bg-white flex flex-col shrink-0 border-l border-gray-200">
+      {/* Header with New Topic Button */}
+      {hasContent && (
+        <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <span className="text-sm font-medium text-gray-700">Sales Agent</span>
+          </div>
+          <button
+            type="button"
+            onClick={resetToDefault}
+            className="text-xs text-gray-400 active:text-gray-600 transition-colors"
+          >
+            开启新话题
+          </button>
+        </div>
+      )}
+      
       {/* Content Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
+        {/* Conversation History */}
+        {conversationHistory.length > 0 && (
+          <div className="p-4">
+            {conversationHistory.map(entry => renderHistoryEntry(entry))}
+          </div>
+        )}
+        
         {currentMode === "default" && showInitial && renderDefaultView()}
         {currentMode === "businessDiagnosis" && renderBusinessDiagnosisView()}
         {currentMode === "analysis" && renderAnalysisView()}
