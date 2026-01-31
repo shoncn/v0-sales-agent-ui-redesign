@@ -119,6 +119,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
   const [showMarketingRightPanel, setShowMarketingRightPanel] = useState(false);
   const [marketingLibraryLoaded, setMarketingLibraryLoaded] = useState(false);
   const [videoGenerationComplete, setVideoGenerationComplete] = useState(false);
+  const [downloadAlert, setDownloadAlert] = useState<{ show: boolean; message: string }>({ show: false, message: "" });
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const rightScrollRef = useRef<HTMLDivElement>(null);
@@ -295,6 +296,17 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         }
       }
     }
+  };
+
+  // Download handlers with alert
+  const handleDownloadVideo = () => {
+    setDownloadAlert({ show: true, message: "下载成功，已保存到本地目录" });
+    setTimeout(() => setDownloadAlert({ show: false, message: "" }), 3000);
+  };
+
+  const handleDownloadPDF = () => {
+    setDownloadAlert({ show: true, message: "PDF导出成功，已保存到本地目录" });
+    setTimeout(() => setDownloadAlert({ show: false, message: "" }), 3000);
   };
 
   // Marketing flow handlers
@@ -696,6 +708,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             <div key={index} className="pt-4 ml-3.5 animate-in fade-in duration-200">
               <button
                 type="button"
+                onClick={handleDownloadPDF}
                 className="flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-500 text-white rounded-lg font-medium active:bg-emerald-600 transition-colors text-sm"
               >
                 <Download className="w-4 h-4" />
@@ -809,9 +822,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 2: Direction question */}
         {marketingStep !== "selectType" && (
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
             <div className="flex-1 space-y-3">
               <p className="text-sm text-gray-700">那么下一步创作哪个方向的营销内容呢</p>
               
@@ -856,9 +867,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 4: Loading library */}
         {marketingStep === "showLibrary" && !marketingLibraryLoaded && (
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
             <div className="flex items-center gap-2 text-gray-500">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span className="text-sm">检索内容库素材内容...</span>
@@ -869,9 +878,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 5: Ask recreate */}
         {(marketingStep === "askRecreate" || marketingStep === "generating" || marketingStep === "complete") && (
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
             <div className="flex-1 space-y-3">
               <p className="text-sm text-gray-700">下一步是否为您重新创作？</p>
               {marketingStep === "askRecreate" && (
@@ -899,9 +906,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 7: Generating - LLM style text generation */}
         {marketingStep === "generating" && (
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
             <div className="flex-1">
               <div className="text-sm text-gray-700 leading-relaxed">
                 <p className="mb-2">正在为您生成视频内容...</p>
@@ -933,9 +938,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         {/* Step 8: Complete */}
         {marketingStep === "complete" && (
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
+            <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-8 h-8 object-contain shrink-0" />
             <div className="flex-1 space-y-3">
               <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200">
                 <div className="flex items-center gap-2">
@@ -1058,6 +1061,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
                   <div className="flex gap-2 mt-4">
                     <button
                       type="button"
+                      onClick={handleDownloadVideo}
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 text-white rounded-lg text-sm font-medium active:bg-emerald-600 transition-colors"
                     >
                       <Download className="w-4 h-4" />
@@ -1226,7 +1230,7 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             {/* Header */}
             <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-blue-500" />
+                <img src="/images/sales-agent-avatar.png" alt="SalesAgent" className="w-6 h-6 object-contain" />
                 <span className="text-sm font-semibold text-gray-800">SalesAgent</span>
               </div>
               {!showWelcome && (
@@ -1268,6 +1272,16 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
           )}
         </div>
       </div>
+
+      {/* Download success alert toast */}
+      {downloadAlert.show && (
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="flex items-center gap-2 px-4 py-3 bg-gray-900 text-white rounded-lg shadow-lg">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <span className="text-sm">{downloadAlert.message}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
