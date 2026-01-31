@@ -1150,13 +1150,11 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
             </div>
           </button>
           
-          {/* Workbench */}
+          {/* Workbench - returns to homepage */}
           <button
             type="button"
-            onClick={resetToDefault}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-              mode === "default" && showWelcome ? "bg-emerald-50 text-emerald-600" : "text-gray-400 active:bg-gray-100"
-            }`}
+            onClick={onClose}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 active:bg-gray-100 transition-colors"
             title="工作台"
           >
             <Home className="w-5 h-5" strokeWidth={1.5} />
@@ -1212,7 +1210,17 @@ export function FullscreenAgent({ isOpen, onClose, initialMode = "default", cust
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex bg-white">
+        <div className="flex-1 flex bg-white relative">
+          {/* Close button - top right corner */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors bg-transparent"
+            title="关闭"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           {/* Chat Panel - Dynamic width */}
           <div className={`flex flex-col transition-all duration-500 ease-in-out ${(showRightPanel || showMarketingRightPanel) ? 'w-[420px] border-r border-gray-200' : 'flex-1'}`}>
             {/* Header */}
