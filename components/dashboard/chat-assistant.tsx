@@ -434,7 +434,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
   );
 
   return (
-    <aside className="w-[360px] bg-gradient-to-b from-gray-50 to-white flex flex-col shrink-0 border-l border-gray-200">
+    <aside className="w-[330px] bg-gradient-to-b from-gray-50 to-white flex flex-col shrink-0 border-l border-gray-200">
       {/* Content Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {currentMode === "default" && showInitial && renderDefaultView()}
