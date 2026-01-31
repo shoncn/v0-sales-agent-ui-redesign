@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, Sparkles, Plus, Mic, ThumbsUp, ThumbsDown, Share2, RefreshCw, X, Upload, ImageIcon } from "lucide-react";
+import { Send, Loader2, Database, Phone, Users, FileText, Download, AlertCircle, BarChart3, User, Target, AnnoyedIcon,Sparkles, Plus, Mic, ThumbsUp, ThumbsDown, Share2, RefreshCw, X, Upload, ImageIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 type AssistantMode = "default" | "analysis" | "customerProfile" | "actionStrategy" | "businessDiagnosis" | "marketingMaterial";
@@ -761,7 +761,7 @@ export function ChatAssistant({ mode = "default", customerName = "王先生", on
     <div className="flex flex-col items-center justify-center h-full px-6 py-10">
       {/* Logo/Avatar */}
       <div className="w-14 h-14 mb-5 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg">
-        <Sparkles className="w-7 h-7 text-white" />
+        <AnnoyedIcon className="w-7 h-7 text-white" />
       </div>
 
       <h2 className="text-lg font-semibold text-gray-800 mb-2">Sales Agent</h2>
