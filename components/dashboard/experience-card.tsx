@@ -8,8 +8,8 @@ export function ExperienceCard() {
       {/* Experience Bar */}
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-500">经验值:</span>
-          <span className="text-lg font-bold text-gray-800">6500/10000</span>
+          <span className="text-sm text-gray-500">战力值:</span>
+          <span className="text-lg font-bold text-gray-800">4201</span>
         </div>
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <span>
