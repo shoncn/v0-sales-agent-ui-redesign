@@ -53,12 +53,12 @@ function TaskCard({
         最后沟通：{lastContact} | {status}
       </p>
 
-      {/* Tags */}
+      {/* Tags - 颜色规范: 紧急-红色, 其他-中性灰 */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         {redTags.map((tag, i) => (
           <span
             key={`red-${i}`}
-            className="px-2 py-1 bg-rose-50 text-rose-600 text-[10px] rounded-md border border-rose-200"
+            className="px-2 py-1 bg-red-50 text-red-600 text-[10px] rounded-md border border-red-200"
           >
             {tag}
           </span>
@@ -66,7 +66,7 @@ function TaskCard({
         {whiteTags.map((tag, i) => (
           <span
             key={`white-${i}`}
-            className="px-2 py-1 bg-gray-50 text-gray-600 text-[10px] rounded-md border border-gray-200"
+            className="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] rounded-md border border-slate-200"
           >
             {tag}
           </span>

@@ -17,16 +17,17 @@ function CustomerItem({
   isHighIntent,
   onClick,
 }: CustomerItemProps) {
+  // 标签颜色规范: 达标-绿色, 未达标-红色, 待改进-黄色, 其他-中性灰
   const getTagStyles = (variant: string) => {
     switch (variant) {
-      case "danger":
-        return "bg-rose-50 text-rose-600 border-rose-200";
-      case "warning":
+      case "danger": // 未达标/紧急
+        return "bg-red-50 text-red-600 border-red-200";
+      case "warning": // 待改进/注意
         return "bg-amber-50 text-amber-600 border-amber-200";
-      case "info":
-        return "bg-blue-50 text-blue-600 border-blue-200";
-      default:
-        return "bg-gray-50 text-gray-600 border-gray-200";
+      case "info": // 达标/正常
+        return "bg-emerald-50 text-emerald-600 border-emerald-200";
+      default: // 其他信息
+        return "bg-slate-100 text-slate-600 border-slate-200";
     }
   };
 

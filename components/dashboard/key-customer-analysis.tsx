@@ -7,73 +7,70 @@ const customers = [
   {
     name: "王先生",
     model: "L9",
-    status: "trial_pending",
+    status: "overdue",
     statusLabel: "试驾后3天未跟进",
     intent: "high",
     description: "宝马X5置换，纠结问界M9",
-    actions: ["跟进用户"],
+    action: "跟进用户",
   },
   {
     name: "陈先生",
     model: "L8 Pro",
-    status: "trial_pending",
+    status: "overdue",
     statusLabel: "试驾后7天未联系",
     intent: "medium",
     description: "对比竞品中，对价格较敏感",
-    actions: ["了解竞品对比", "提供优惠"],
+    action: "了解竞品对比",
   },
   {
     name: "张女士",
     model: "L9 Max",
-    status: "negotiating",
+    status: "normal",
     statusLabel: "二次到店洽谈中",
     intent: "high",
     description: "三胎家庭，空间需求明显",
-    actions: ["配置方案介绍", "预约二访"],
+    action: "配置方案介绍",
   },
   {
     name: "周先生",
     model: "L8 Max",
-    status: "overdue",
+    status: "warning",
     statusLabel: "试驾后6天",
     intent: "high",
     description: "科技爱好者，智驾接受度高",
-    actions: ["智能驾驶演示", "预约沟通"],
+    action: "智能驾驶演示",
   },
   {
     name: "赵女士",
     model: "L7 Pro",
-    status: "quote_pending",
+    status: "normal",
     statusLabel: "报价中等待决策",
     intent: "high",
     description: "首购用户，关注售后服务",
-    actions: ["跟进服务", "贷款方案"],
+    action: "跟进服务",
   },
   {
     name: "韩女士",
     model: "L9 Pro",
-    status: "compare",
+    status: "warning",
     statusLabel: "对比竞品M9",
     intent: "medium",
     description: "高端用户，同时对比问界M9",
-    actions: ["综合优势", "竞品对比"],
+    action: "竞品对比分析",
   },
 ];
 
+// 标签颜色规范: 达标-绿色, 未达标-红色, 待改进-黄色, 其他-中性灰
 const getStatusStyle = (status: string) => {
   switch (status) {
-    case "trial_pending":
-      return "bg-amber-100 text-amber-700 border-amber-200";
-    case "negotiating":
-      return "bg-blue-100 text-blue-700 border-blue-200";
-    case "overdue":
-      return "bg-red-100 text-red-700 border-red-200";
-    case "quote_pending":
-      return "bg-purple-100 text-purple-700 border-purple-200";
-    case "compare":
-      return "bg-orange-100 text-orange-700 border-orange-200";
-    default:
-      return "bg-gray-100 text-gray-700 border-gray-200";
+    case "normal": // 达标
+      return "bg-emerald-50 text-emerald-600 border-emerald-200";
+    case "overdue": // 未达标
+      return "bg-red-50 text-red-600 border-red-200";
+    case "warning": // 待改进
+      return "bg-amber-50 text-amber-600 border-amber-200";
+    default: // 其他
+      return "bg-slate-50 text-slate-600 border-slate-200";
   }
 };
 
@@ -84,7 +81,7 @@ const getIntentStyle = (intent: string) => {
     case "medium":
       return "text-amber-600";
     default:
-      return "text-gray-500";
+      return "text-slate-500";
   }
 };
 
@@ -96,19 +93,19 @@ export function KeyCustomerAnalysis() {
           <Star className="w-4 h-4 text-amber-500" />
           <h3 className="text-sm font-semibold text-gray-800">重点客户分析</h3>
         </div>
-        <Button variant="ghost" size="sm" className="text-xs text-emerald-600 hover:text-emerald-700 bg-transparent">
+        <Button variant="ghost" size="sm" className="text-xs text-emerald-600 active:text-emerald-700 bg-transparent">
           共6位
         </Button>
       </div>
 
       {/* Table Header */}
-      <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-gray-50 rounded-lg text-xs font-medium text-gray-500 mb-2">
-        <div className="col-span-1">客户名</div>
-        <div className="col-span-1">意向车系</div>
-        <div className="col-span-2">当前状态</div>
-        <div className="col-span-1">意向等级</div>
-        <div className="col-span-4">客户描述</div>
-        <div className="col-span-3">建议动作</div>
+      <div className="grid grid-cols-[60px_70px_120px_60px_1fr_100px] gap-3 px-3 py-2 bg-gray-50 rounded-lg text-xs font-medium text-gray-500 mb-2">
+        <div>客户名</div>
+        <div>意向车系</div>
+        <div>当前状态</div>
+        <div>意向</div>
+        <div>客户描述</div>
+        <div>建议动作</div>
       </div>
 
       {/* Table Body */}
@@ -116,35 +113,32 @@ export function KeyCustomerAnalysis() {
         {customers.map((customer, index) => (
           <div 
             key={index} 
-            className="grid grid-cols-12 gap-2 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors items-center border-b border-gray-50 last:border-0"
+            className="grid grid-cols-[60px_70px_120px_60px_1fr_100px] gap-3 px-3 py-2.5 rounded-lg active:bg-gray-50 transition-colors items-center border-b border-gray-50 last:border-0"
           >
-            <div className="col-span-1 text-sm font-medium text-gray-800">{customer.name}</div>
-            <div className="col-span-1">
-              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">{customer.model}</span>
+            <div className="text-sm font-medium text-gray-800">{customer.name}</div>
+            <div>
+              <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded">{customer.model}</span>
             </div>
-            <div className="col-span-2">
-              <span className={`px-2 py-0.5 text-xs rounded-md border ${getStatusStyle(customer.status)}`}>
+            <div>
+              <span className={`px-2 py-0.5 text-xs rounded border whitespace-nowrap ${getStatusStyle(customer.status)}`}>
                 {customer.statusLabel}
               </span>
             </div>
-            <div className="col-span-1">
+            <div>
               <span className={`text-sm font-medium ${getIntentStyle(customer.intent)}`}>
                 {customer.intent === "high" ? "高" : customer.intent === "medium" ? "中" : "低"}
               </span>
             </div>
-            <div className="col-span-4 text-xs text-gray-500 truncate">{customer.description}</div>
-            <div className="col-span-3 flex gap-1.5">
-              {customer.actions.map((action, actionIndex) => (
-                <Button
-                  key={actionIndex}
-                  variant="outline"
-                  size="sm"
-                  className="h-6 text-xs px-2 py-0 border-emerald-200 text-emerald-600 hover:bg-emerald-50 bg-transparent whitespace-nowrap"
-                >
-                  <UserRound className="w-3 h-3 mr-1" />
-                  {action}
-                </Button>
-              ))}
+            <div className="text-xs text-gray-500 truncate">{customer.description}</div>
+            <div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs px-2 py-0 border-emerald-200 text-emerald-600 active:bg-emerald-50 bg-transparent whitespace-nowrap"
+              >
+                <UserRound className="w-3 h-3 mr-1" />
+                {customer.action}
+              </Button>
             </div>
           </div>
         ))}
